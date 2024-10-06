@@ -1,15 +1,17 @@
 [tool.poetry]
 name = "yandex-cloud-billing-analisys"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
-authors = ["Гришенков Леонид Викторович <leonidgrishenkov@gmail.com>"]
+authors = ["Leonid Grishenkov <grishenkovleonid@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-pandas = "^2.2.3"
-boto3 = "^1.35.24"
-python-dotenv = "^1.0.1"
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pandas = "2.2.3"
+boto3 = "1.35.34"
+python-dotenv = "1.0.0"
 
 
 [build-system]
