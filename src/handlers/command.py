@@ -1,16 +1,26 @@
+import os
+
+import boto3
+import dotenv
+import pandas as pd
 from telegram import (
     ForceReply,
-    User,
-    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
     KeyboardButton,
     ReplyKeyboardMarkup,
-    InlineKeyboardMarkup,
+    Update,
+    User,
     WebAppInfo,
-    InlineKeyboardButton,
 )
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+
+from report import get_top_consumption_by_product, get_top_consumption_by_service
 from utils import logger
-import pandas as pd
+
+dotenv.load_dotenv()
+
+BUCKET = "yandex-cloud-billing"
 
 
 async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -60,3 +70,49 @@ async def handle_test_command(update: Update, context: ContextTypes.DEFAULT_TYPE
     text_table = f"<pre>{df.to_string(index=False)}</pre>"
 
     await update.message.reply_text(text_table, parse_mode="HTML")
+
+
+async def handle_cost_by_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user: User | None = update.effective_user
+    logger.info("User `%s` triggered the /costByProduct command", user.username)
+
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text="Creating report for you, it may take a moment"
+    )
+
+    s3 = boto3.client(
+        service_name="s3",
+        endpoint_url="https://storage.yandexcloud.net",
+        aws_access_key_id=os.getenv("YC_ADMIN_SA_ACCESS_KEY"),
+        aws_secret_access_key=os.getenv("YC_ADMIN_SA_SECRET_KEY"),
+    )
+
+    df = get_top_consumption_by_product(s3, bucket=BUCKET)
+    reply = [f"{row.sku_name} - {round(row.cost, 2)} RUB" for row in df.itertuples(index=False)]
+
+    s3.close()
+
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="\n".join(reply))
+
+
+async def handle_cost_by_service(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user: User | None = update.effective_user
+    logger.info("User `%s` triggered the /costByService command", user.username)
+
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text="Creating report for you, it may take a moment"
+    )
+
+    s3 = boto3.client(
+        service_name="s3",
+        endpoint_url="https://storage.yandexcloud.net",
+        aws_access_key_id=os.getenv("YC_ADMIN_SA_ACCESS_KEY"),
+        aws_secret_access_key=os.getenv("YC_ADMIN_SA_SECRET_KEY"),
+    )
+
+    df = get_top_consumption_by_service(s3, bucket=BUCKET)
+    reply = [f"{row.service_name} - {round(row.cost, 2)} RUB" for row in df.itertuples(index=False)]
+
+    s3.close()
+
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="\n".join(reply))

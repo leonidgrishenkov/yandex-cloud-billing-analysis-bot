@@ -1,9 +1,7 @@
-import atexit
 import os
 import sys
 from datetime import date, datetime
 from enum import Enum
-from pprint import pprint
 
 import boto3
 import dotenv
@@ -13,36 +11,15 @@ from botocore.exceptions import ClientError
 from utils import logger
 
 
-def convert_bytes_to_mb(n: int) -> float:
-    if isinstance(n, str):
-        n = int(n)
-    return round(n / 1_000_000, 4)
-
-
-def list_buckets(client) -> ...:
-    pprint(client.list_buckets())
-
-
-def list_bucket_objects(client, bucket: str) -> ...:
-    response = client.list_objects(
-        Bucket=bucket,
-        MaxKeys=100,
-    )
-
-    for item in response["Contents"]:
-        print(
-            f"key={item['Key']} modified_at={item['LastModified'].strftime(r'%Y-%m-%d %H:%M:%S')} UTC size={convert_bytes_to_mb(item['Size'])} MB"
-        )
-
-
-class By(Enum):
+class GroupBy(Enum):
     SERVICE = "service_name"
     PRODUCT = "sku_name"
 
 
-def get_top_consumption(table: pd.DataFrame, by: By, top: int = 10) -> pd.DataFrame:
+def _get_top_consumption(report: pd.DataFrame, by: GroupBy, top: int = 10) -> pd.DataFrame:
+    logger.info("Aggregating report by %s with top %s", by.value, top)
     return (
-        table.groupby([by.value], as_index=False)
+        report.groupby([by.value], as_index=False)
         .agg({"cost": "sum"})
         .sort_values("cost", ascending=False)
         .iloc[:top, :]
@@ -52,16 +29,43 @@ def get_top_consumption(table: pd.DataFrame, by: By, top: int = 10) -> pd.DataFr
 class NoReportError(Exception): ...
 
 
-def get_report(client, report_date: date, bucket: str) -> pd.DataFrame:
+def _get_report(s3, report_date: date, bucket: str) -> pd.DataFrame:
     key: str = f"{report_date.strftime(r'%Y%m%d')}.csv"
+
+    logger.info("Getting %s key from %s bucket", key, bucket)
     try:
-        response: dict = client.get_object(
+        response: dict = s3.get_object(
             Bucket=bucket,
             Key=key,
         )
+        logger.info("Response recieved")
         return pd.read_csv(response["Body"])
     except ClientError:
         raise NoReportError(f"There is no report for this date: `{report_date}`") from None
+
+
+def get_top_consumption_by_product(s3, bucket: str) -> pd.DataFrame:
+    report_date: date = datetime.now().date()
+
+    report: pd.DataFrame = _get_report(s3, report_date=report_date, bucket=bucket)
+
+    return _get_top_consumption(
+        report=report,
+        by=GroupBy.PRODUCT,
+        top=10,
+    )
+
+
+def get_top_consumption_by_service(s3, bucket: str) -> pd.DataFrame:
+    report_date: date = datetime.now().date()
+
+    report: pd.DataFrame = _get_report(s3, report_date=report_date, bucket=bucket)
+
+    return _get_top_consumption(
+        report=report,
+        by=GroupBy.SERVICE,
+        top=10,
+    )
 
 
 def main() -> ...:
@@ -73,31 +77,42 @@ def main() -> ...:
         aws_access_key_id=os.getenv("YC_ADMIN_SA_ACCESS_KEY"),
         aws_secret_access_key=os.getenv("YC_ADMIN_SA_SECRET_KEY"),
     )
-    atexit.register(s3.close)
     BUCKET = "yandex-cloud-billing"
 
+    # print(get_top_consumption_by_product(s3, bucket=BUCKET).head(10))
+
+    df = get_top_consumption_by_product(s3, bucket=BUCKET)
+    l = []
+    for row in df.itertuples(index=False):
+        _ = f"{row.sku_name} - {round(row.cost, 2)} RUB"
+        l.append(_)
+
+    print("\n".join(l))
+
+    s3.close()
+
     # report_date: date = datetime.now().date()
-    report_date: date = date(2023, 4, 4)
+    # report_date: date = date(2023, 4, 4)
 
-    try:
-        table = get_report(client=s3, report_date=report_date, bucket=BUCKET)
+    # try:
+    #     table = get_report(client=s3, report_date=report_date, bucket=BUCKET)
 
-        print(
-            get_top_consumption(
-                table=table,
-                by=By.PRODUCT,
-            ).head(10)
-        )
+    #     print(
+    #         get_top_consumption(
+    #             table=table,
+    #             type=GroupBy.PRODUCT,
+    #         ).head(10)
+    #     )
 
-        print(
-            get_top_consumption(
-                table=table,
-                by=By.SERVICE,
-            ).head(10)
-        )
-    except NoReportError as err:
-        logger.exception(err)
-        sys.exit(2)
+    #     print(
+    #         get_top_consumption(
+    #             table=table,
+    #             type=GroupBy.SERVICE,
+    #         ).head(10)
+    #     )
+    # except NoReportError as err:
+    #     logger.exception(err)
+    #     sys.exit(2)
 
 
 if __name__ == "__main__":

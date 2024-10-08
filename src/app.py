@@ -29,6 +29,8 @@ def main() -> ...:
     app.add_handler(CommandHandler("start", command.handle_start_command))
     app.add_handler(CommandHandler("help", command.handle_help_command))
     app.add_handler(CommandHandler("test", command.handle_test_command))
+    app.add_handler(CommandHandler("costByProduct", command.handle_cost_by_product))
+    app.add_handler(CommandHandler("costByService", command.handle_cost_by_service))
     # app.add_handler(CommandHandler("caps", caps))
 
     # Add messages handlers.
