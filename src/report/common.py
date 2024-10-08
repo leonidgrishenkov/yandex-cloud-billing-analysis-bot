@@ -17,7 +17,7 @@ def groupby_top_consumption_items(
     groupby: GroupBy,
     top: int = 10,
 ) -> pd.DataFrame:
-    logger.info("Aggregating report by %s with top %s", groupby.value, top)
+    logger.info("Aggregating report by `%s` with top `%s`", groupby.value, top)
     return (
         report.groupby([groupby.value], as_index=False)
         .agg({"cost": "sum"})
@@ -32,7 +32,7 @@ class NoReportError(Exception): ...
 def get_report_from_s3(s3, report_date: date, bucket: str) -> pd.DataFrame:
     key: str = f"{report_date.strftime(r'%Y%m%d')}.csv"
 
-    logger.info("Getting %s key from %s bucket", key, bucket)
+    logger.info("Getting `%s` key from `%s` bucket", key, bucket)
     try:
         response: dict = s3.get_object(
             Bucket=bucket,

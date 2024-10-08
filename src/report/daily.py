@@ -1,15 +1,15 @@
 from datetime import date, datetime
 
-from report import common
 import pandas as pd
 
+from report import common
 from utils import logger
 
 
 def create_top_consumption_by_product_report(s3, bucket: str) -> pd.DataFrame:
     current_date: date = datetime.now().date()
 
-    logger.info("Creating report for current date: %s", current_date)
+    logger.info("Creating report for current date: `%s`", current_date)
 
     report: pd.DataFrame = common.get_report_from_s3(s3, report_date=current_date, bucket=bucket)
 
@@ -23,7 +23,7 @@ def create_top_consumption_by_product_report(s3, bucket: str) -> pd.DataFrame:
 def create_top_consumption_by_service_report(s3, bucket: str) -> pd.DataFrame:
     current_date: date = datetime.now().date()
 
-    logger.info("Creating report for current date: %s", current_date)
+    logger.info("Creating report for current date: `%s`", current_date)
 
     report: pd.DataFrame = common.get_report_from_s3(s3, report_date=current_date, bucket=bucket)
 

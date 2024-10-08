@@ -1,17 +1,7 @@
-from telegram import (
-    ForceReply,
-    User,
-    Update,
-    KeyboardButton,
-    ReplyKeyboardMarkup,
-    InlineKeyboardMarkup,
-    WebAppInfo,
-    InlineKeyboardButton,
-)
+from telegram import Update
 from telegram.ext import (
     Application,
     CommandHandler,
-    ContextTypes,
     MessageHandler,
     filters,
     CallbackQueryHandler,
@@ -22,7 +12,7 @@ import sys
 import os
 import dotenv
 
-POLL_INTERVAL = 1  # seconds
+POLL_INTERVAL = 1  # Seconds
 
 
 def main() -> ...:
@@ -32,24 +22,21 @@ def main() -> ...:
     # Create the Application.
     app = Application.builder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 
-    # Add commands handlers.
+    # Commands handlers.
     app.add_handler(CommandHandler("start", command.handle_start_command))
     app.add_handler(CommandHandler("help", command.handle_help_command))
-    # app.add_handler(CommandHandler("test", command.handle_test_command))
-    app.add_handler(CommandHandler("costByProduct", command.handle_cost_by_product))
-    app.add_handler(CommandHandler("costByService", command.handle_cost_by_service))
     app.add_handler(CommandHandler("getDailyReport", command.handle_get_daily_report))
+    app.add_handler(CommandHandler("getWeeklyReport", command.handle_get_weekly_report))
 
-    # app.add_handler(CommandHandler("caps", caps))
-
-    # Add messages handlers.
+    # Messages handlers.
     app.add_handler(MessageHandler(filters.COMMAND, command.handle_unknown_command))
     app.add_handler(MessageHandler(filters.TEXT, message.handle_any_message))
 
-    # Add erros handlers
-    app.add_error_handler(error.log_error)
+    # Erros handlers.
+    app.add_error_handler(error.handle_error)
 
-    app.add_handler(CallbackQueryHandler(command.button))
+    # Callback query handlers.
+    app.add_handler(CallbackQueryHandler(command.handle_callback_query_buttons))
 
     logger.info("Running polling with %s seconds poll interval", POLL_INTERVAL)
     app.run_polling(
