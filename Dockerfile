@@ -1,3 +1,5 @@
+# 3.12.5-slim
+# https://hub.docker.com/layers/library/python/3.12.5-slim/images/sha256-eac7a234d33269f362593c31d2ff1db7b116fbd794929f1f6015f5ea812ff254?context=explore
 FROM docker.io/python@sha256:c24c34b502635f1f7c4e99dc09a2cbd85d480b7dcfd077198c6b5af138906390
 
 USER root

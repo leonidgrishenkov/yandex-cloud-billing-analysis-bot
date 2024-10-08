@@ -67,21 +67,20 @@ def get_report(client, report_date: date, bucket: str) -> pd.DataFrame:
 def main() -> ...:
     dotenv.load_dotenv()
 
-    session = boto3.session.Session()
-    client = session.client(
+    s3 = boto3.client(
         service_name="s3",
         endpoint_url="https://storage.yandexcloud.net",
         aws_access_key_id=os.getenv("YC_ADMIN_SA_ACCESS_KEY"),
         aws_secret_access_key=os.getenv("YC_ADMIN_SA_SECRET_KEY"),
     )
-    atexit.register(client.close)
+    atexit.register(s3.close)
     BUCKET = "yandex-cloud-billing"
 
     # report_date: date = datetime.now().date()
     report_date: date = date(2023, 4, 4)
 
     try:
-        table = get_report(client=client, report_date=report_date, bucket=BUCKET)
+        table = get_report(client=s3, report_date=report_date, bucket=BUCKET)
 
         print(
             get_top_consumption(

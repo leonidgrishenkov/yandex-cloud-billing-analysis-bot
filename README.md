@@ -21,3 +21,16 @@ docker run --detach --rm \
 ```sh
 docker exec -it billing-analysis /bin/bash
 ```
+
+```sh
+poetry env use $(which python3)
+```
+
+
+```sh
+. $(poetry env info --path)/bin/activate
+```
+
+```sh
+poetry install
+```
