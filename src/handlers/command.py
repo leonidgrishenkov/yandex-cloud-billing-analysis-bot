@@ -8,6 +8,7 @@ from telegram import (
     Update,
     User,
 )
+from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
 from report import daily, weekly
@@ -49,9 +50,9 @@ async def handle_unknown_command(update: Update, context: ContextTypes.DEFAULT_T
     )
 
 
-async def handle_get_daily_report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
+async def handle_daily_report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
     user: User | None = update.effective_user
-    logger.info("User `%s` triggered the `/getDailyReport` command", user.username)
+    logger.info("User `%s` triggered the `/daily_report` command", user.username)
 
     keyboard = [
         [InlineKeyboardButton("By Service", callback_data="daily_by_service")],
@@ -65,9 +66,9 @@ async def handle_get_daily_report(update: Update, context: ContextTypes.DEFAULT_
     )
 
 
-async def handle_get_weekly_report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
+async def handle_weekly_report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
     user: User | None = update.effective_user
-    logger.info("User `%s` triggered the `/getWeeklyReport` command", user.username)
+    logger.info("User `%s` triggered the `/weekly_report` command", user.username)
 
     keyboard = [
         [InlineKeyboardButton(text="By Service", callback_data="weekly_by_service")],
@@ -91,72 +92,78 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         await query.edit_message_text(
             text="Creating daily report by service, it may take a while. 😉"
         )
-        logger.info(
-            "User `%s` chose `by_service` button of `/getDailyReport` command", user.username
-        )
+        logger.info("User `%s` chose `by_service` button of `/daily_report` command", user.username)
 
         s3 = get_s3_instance()
         report = daily.create_top_consumption_by_service_report(s3, bucket=os.getenv("BUCKET"))
         reply = [
-            f"{row.service_name} - {round(row.cost, 2)} RUB"
+            f"<b>{row.service_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
         ]
         s3.close()
 
         logger.info("Report created, sending back to user")
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="\n".join(reply))
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id, text="\n".join(reply), parse_mode=ParseMode.HTML
+        )
 
     elif query.data == "daily_by_product":
         await query.edit_message_text(
             text="Creating daily report by product, it may take a while. 😉"
         )
-        logger.info(
-            "User `%s` chose `by_product` button of `/getDailyReport` command", user.username
-        )
+        logger.info("User `%s` chose `by_product` button of `/daily_report` command", user.username)
 
         s3 = get_s3_instance()
         report = daily.create_top_consumption_by_product_report(s3, bucket=os.getenv("BUCKET"))
         reply = [
-            f"{row.sku_name} - {round(row.cost, 2)} RUB" for row in report.itertuples(index=False)
+            f"<b>{row.sku_name}:</b> {round(row.cost, 2)} RUB"
+            for row in report.itertuples(index=False)
         ]
         s3.close()
 
         logger.info("Report created, sending back to user")
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="\n".join(reply))
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id, text="\n".join(reply), parse_mode=ParseMode.HTML
+        )
 
     elif query.data == "weekly_by_service":
         await query.edit_message_text(
             text="Creating weekly report by service, it may take a while. 😉"
         )
         logger.info(
-            "User `%s` chose `by_service` button of `/getWeeklyReport` command", user.username
+            "User `%s` chose `by_service` button of `/weekly_report` command", user.username
         )
 
         s3 = get_s3_instance()
         report = weekly.create_top_consumption_by_service_report(s3, bucket=os.getenv("BUCKET"))
         reply = [
-            f"{row.service_name} - {round(row.cost, 2)} RUB"
+            f"<b>{row.service_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
         ]
         s3.close()
 
         logger.info("Report created, sending back to user")
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="\n".join(reply))
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id, text="\n".join(reply), parse_mode=ParseMode.HTML
+        )
 
     elif query.data == "weekly_by_product":
         await query.edit_message_text(
             text="Creating weekly report by product, it may take a while. 😉"
         )
         logger.info(
-            "User `%s` chose `by_product` button of `/getWeeklyReport` command", user.username
+            "User `%s` chose `by_product` button of `/weekly_report` command", user.username
         )
 
         s3 = get_s3_instance()
         report = weekly.create_top_consumption_by_product_report(s3, bucket=os.getenv("BUCKET"))
         reply = [
-            f"{row.sku_name} - {round(row.cost, 2)} RUB" for row in report.itertuples(index=False)
+            f"<b>{row.sku_name}:</b> {round(row.cost, 2)} RUB"
+            for row in report.itertuples(index=False)
         ]
         s3.close()
 
         logger.info("Report created, sending back to user")
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="\n".join(reply))
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id, text="\n".join(reply), parse_mode=ParseMode.HTML
+        )

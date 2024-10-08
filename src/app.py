@@ -1,16 +1,18 @@
+import os
+import sys
+
+import dotenv
 from telegram import Update
 from telegram.ext import (
     Application,
+    CallbackQueryHandler,
     CommandHandler,
     MessageHandler,
     filters,
-    CallbackQueryHandler,
 )
-from utils import logger
+
 from handlers import command, error, message
-import sys
-import os
-import dotenv
+from utils import logger
 
 POLL_INTERVAL = 1  # Seconds
 
@@ -25,8 +27,8 @@ def main() -> ...:
     # Commands handlers.
     app.add_handler(CommandHandler("start", command.handle_start_command))
     app.add_handler(CommandHandler("help", command.handle_help_command))
-    app.add_handler(CommandHandler("getDailyReport", command.handle_get_daily_report))
-    app.add_handler(CommandHandler("getWeeklyReport", command.handle_get_weekly_report))
+    app.add_handler(CommandHandler("daily_report", command.handle_daily_report))
+    app.add_handler(CommandHandler("weekly_report", command.handle_weekly_report))
 
     # Messages handlers.
     app.add_handler(MessageHandler(filters.COMMAND, command.handle_unknown_command))
