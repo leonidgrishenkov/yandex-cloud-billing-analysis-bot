@@ -16,10 +16,14 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry $(whic
 
 ENV PATH="/opt/poetry/bin:$PATH"
 
-# COPY ./pyproject.toml /app/pyproject.toml
-# COPY ./.env /app/.env
+COPY ./pyproject.toml /app/pyproject.toml
+COPY ./.env /app/.env
+COPY ./src /app/src
 
-# RUN cd /app \
-#     && poetry env use $(which python3) \
-#     && . $(poetry env info --path)/bin/activate \
-#     && poetry install --only generator
+RUN cd /app \
+    && poetry env use $(which python3) \
+    && poetry install
+
+RUN chmod +x /app/src/entrypoint.sh
+
+ENTRYPOINT ["/app/src/entrypoint.sh"]

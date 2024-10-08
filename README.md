@@ -5,7 +5,13 @@ python src/main.py
 ```
 
 ```sh
-docker build -t billing-analysis:dev-1.0.0 -f Dockerfile .
+docker build -t billing-analysis:dev-2.0.0 -f Dockerfile .
+```
+
+```sh
+docker run --rm \
+    --name billing-analysis \
+    billing-analysis:dev-2.0.0
 ```
 
 ```sh
