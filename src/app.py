@@ -8,7 +8,14 @@ from telegram import (
     WebAppInfo,
     InlineKeyboardButton,
 )
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+    CallbackQueryHandler,
+)
 from utils import logger
 from handlers import command, error, message
 import sys
@@ -28,9 +35,11 @@ def main() -> ...:
     # Add commands handlers.
     app.add_handler(CommandHandler("start", command.handle_start_command))
     app.add_handler(CommandHandler("help", command.handle_help_command))
-    app.add_handler(CommandHandler("test", command.handle_test_command))
+    # app.add_handler(CommandHandler("test", command.handle_test_command))
     app.add_handler(CommandHandler("costByProduct", command.handle_cost_by_product))
     app.add_handler(CommandHandler("costByService", command.handle_cost_by_service))
+    app.add_handler(CommandHandler("getDailyReport", command.handle_get_daily_report))
+
     # app.add_handler(CommandHandler("caps", caps))
 
     # Add messages handlers.
@@ -39,6 +48,8 @@ def main() -> ...:
 
     # Add erros handlers
     app.add_error_handler(error.log_error)
+
+    app.add_handler(CallbackQueryHandler(command.button))
 
     logger.info("Running polling with %s seconds poll interval", POLL_INTERVAL)
     app.run_polling(
