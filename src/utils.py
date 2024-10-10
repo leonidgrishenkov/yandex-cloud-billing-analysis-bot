@@ -19,6 +19,6 @@ def get_s3_instance() -> ...:
     return boto3.client(
         service_name="s3",
         endpoint_url="https://storage.yandexcloud.net",
-        aws_access_key_id=os.getenv("YC_ADMIN_SA_ACCESS_KEY"),
-        aws_secret_access_key=os.getenv("YC_ADMIN_SA_SECRET_KEY"),
+        aws_access_key_id=os.getenv("YC_S3_ADMIN_SA_ACCESS_KEY"),
+        aws_secret_access_key=os.getenv("YC_S3_ADMIN_SA_SECRET_KEY"),
     )

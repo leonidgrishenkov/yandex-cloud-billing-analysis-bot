@@ -95,7 +95,9 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         logger.info("User `%s` chose `by_service` button of `/daily_report` command", user.username)
 
         s3 = get_s3_instance()
-        report = daily.create_top_consumption_by_service_report(s3, bucket=os.getenv("BUCKET"))
+        report = daily.create_top_consumption_by_service_report(
+            s3, bucket=os.getenv("S3_BUCKET_NAME")
+        )
         reply = [
             f"<b>{row.service_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
@@ -114,7 +116,9 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         logger.info("User `%s` chose `by_product` button of `/daily_report` command", user.username)
 
         s3 = get_s3_instance()
-        report = daily.create_top_consumption_by_product_report(s3, bucket=os.getenv("BUCKET"))
+        report = daily.create_top_consumption_by_product_report(
+            s3, bucket=os.getenv("S3_BUCKET_NAME")
+        )
         reply = [
             f"<b>{row.sku_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
@@ -135,7 +139,9 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         )
 
         s3 = get_s3_instance()
-        report = weekly.create_top_consumption_by_service_report(s3, bucket=os.getenv("BUCKET"))
+        report = weekly.create_top_consumption_by_service_report(
+            s3, bucket=os.getenv("S3_BUCKET_NAME")
+        )
         reply = [
             f"<b>{row.service_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
@@ -156,7 +162,9 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         )
 
         s3 = get_s3_instance()
-        report = weekly.create_top_consumption_by_product_report(s3, bucket=os.getenv("BUCKET"))
+        report = weekly.create_top_consumption_by_product_report(
+            s3, bucket=os.getenv("S3_BUCKET_NAME")
+        )
         reply = [
             f"<b>{row.sku_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)

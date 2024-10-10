@@ -21,10 +21,10 @@ jobs:
 
             - name: Generate .env file
               run: |
-                  echo "YC_ADMIN_SA_ACCESS_KEY=${{ secrets.YC_ADMIN_SA_ACCESS_KEY }}" >> .env
-                  echo "YC_ADMIN_SA_SECRET_KEY=${{ secrets.YC_ADMIN_SA_SECRET_KEY }}" >> .env
+                  echo "YC_S3_ADMIN_SA_ACCESS_KEY=${{ secrets.YC_S3_ADMIN_SA_ACCESS_KEY }}" >> .env
+                  echo "YC_S3_ADMIN_SA_SECRET_KEY=${{ secrets.YC_S3_ADMIN_SA_SECRET_KEY }}" >> .env
                   echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
-                  echo "BUCKET=${{ secrets.BUCKET }}" >> .env
+                  echo "S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}" >> .env
 
             - name: Log docker in to the Yandex Cloud Registry
               run: echo "${{ secrets.YC_OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
@@ -41,8 +41,8 @@ jobs:
                   echo "${{ secrets.YC_SSH_KEY }}" > ~/.ssh/id_rsa
                   chmod 600 ~/.ssh/id_rsa
                   echo "Host target-compute-intance" >> ~/.ssh/config
-                  echo "  HostName ${{ secrets.YC_COMPUTE_EXT_IP }}" >> ~/.ssh/config
-                  echo "  User ${{ secrets.YC_COMPUTE_USER }}" >> ~/.ssh/config
+                  echo "  HostName ${{ vars.YC_COMPUTE_EXT_IP }}" >> ~/.ssh/config
+                  echo "  User ${{ vars.YC_COMPUTE_USER }}" >> ~/.ssh/config
                   echo "  IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
                   echo "  StrictHostKeyChecking no" >> ~/.ssh/config
 

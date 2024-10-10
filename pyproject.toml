@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "yandex-cloud-billing-analisys"
+name = "yandex-cloud-billing-analysis-bot"
 version = "1.0.0"
 description = ""
 authors = ["Leonid Grishenkov <grishenkovleonid@gmail.com>"]
