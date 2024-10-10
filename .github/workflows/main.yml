@@ -1,0 +1,24 @@
+---
+name: Build and Push Docker Image
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Log in to the Registry
+              run: echo "${{ secrets.YC_OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
+
+            - name: Build Docker image
+              run: docker build -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}//${{ github.repository }}:${{ github.sha }} .
+
+            - name: Push Docker image to the Registry
+              run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository }}:${{ github.sha }}
