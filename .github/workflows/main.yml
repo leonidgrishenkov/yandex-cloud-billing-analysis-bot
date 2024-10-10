@@ -8,18 +8,18 @@ on:
             - "*"
 
 jobs:
-    build-and-push:
+    deploy:
         runs-on: ubuntu-22.04
 
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
 
-            - name: Extract Tag
+            - name: Extract Git Tag
               id: extract_tag
               run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
-            - name: Create .env file
+            - name: Generate .env file
               run: |
                   echo "YC_ADMIN_SA_ACCESS_KEY=${{ secrets.YC_ADMIN_SA_ACCESS_KEY }}" >> .env
                   echo "YC_ADMIN_SA_SECRET_KEY=${{ secrets.YC_ADMIN_SA_SECRET_KEY }}" >> .env
@@ -34,3 +34,19 @@ jobs:
 
             - name: Push Docker image to the Registry
               run: docker push --quiet cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}
+
+            - name: Configure SSH
+              run: |
+                  mkdir -p ~/.ssh/
+                  echo "${{ secrets.YC_SSH_KEY }}" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  echo "Host target-compute-intance" >> ~/.ssh/config
+                  echo "  HostName ${{ secrets.YC_COMPUTE_EXT_IP }}" >> ~/.ssh/config
+                  echo "  User ${{ secrets.YC_COMPUTE_USER }}" >> ~/.ssh/config
+                  echo "  IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+                  echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+
+            - name: Run new Docker image
+              run: |
+                  ssh target-compute-intance 'docker stop ${{ github.event.repository.name }}'
+                  ssh target-compute-intance 'docker run -d -q --rm --name ${{ github.event.repository.name }} cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}'
