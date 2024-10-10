@@ -28,4 +28,4 @@ jobs:
               run: docker build -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ github.sha }} .
 
             - name: Push Docker image to the Registry
-              run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ github.sha }}
+              run: docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ github.sha }}
