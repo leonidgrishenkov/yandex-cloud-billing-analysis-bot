@@ -48,8 +48,5 @@ jobs:
 
             - name: Run new Docker image
               run: |
-                  CONTAINER_NAME="${{ github.event.repository.name }}"
-                  IMAGE="cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}"
-
-                  ssh target-compute-intance 'if [ "$(docker ps -q -f name=$CONTAINER_NAME)" ]; then docker stop $CONTAINER_NAME; fi'
-                  ssh target-compute-intance 'docker run -d -q --rm --name=$CONTAINER_NAME $IMAGE'
+                  ssh target-compute-intance 'if [ "$(docker ps -q -f name=${{ github.event.repository.name }})" ]; then docker stop ${{ github.event.repository.name }}; fi'
+                  ssh target-compute-intance 'docker run -d -q --rm --name=${{ github.event.repository.name }} cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}'
