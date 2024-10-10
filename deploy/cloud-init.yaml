@@ -1,0 +1,11 @@
+#cloud-config
+users:
+    - name: ${username}
+      groups: sudo
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      shell: /bin/bash
+      ssh-authorized-keys:
+          - ${ssh_key_path}
+
+runcmd:
+    - sudo usermod -aG docker ${username}
