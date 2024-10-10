@@ -12,7 +12,7 @@ from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
 from report import daily, weekly
-from utils import get_s3_instance, logger
+from utils import get_s3_instance, logger, AUTHORIZED_USERS
 
 dotenv.load_dotenv()
 
@@ -21,28 +21,48 @@ async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYP
     """Send a message when the command /start is issued."""
     user: User | None = update.effective_user
 
-    logger.info("User `%s` triggered the /start command", user.username)
-
-    await update.message.reply_html(
-        text=rf"Hi {user.mention_html()}! Please, use one of available commands.",
-        reply_markup=ForceReply(selective=True),
-    )
+    if user.id in AUTHORIZED_USERS:
+        logger.info(
+            "User (usename='%s' id='%s') triggered the `/start` command", user.username, user.id
+        )
+        await update.message.reply_html(
+            text=rf"Hi {user.mention_html()}! Please, use one of available commands.",
+            reply_markup=ForceReply(selective=True),
+        )
+    else:
+        logger.warning(
+            "Unauthorized user (usename='%s' id='%s') triggered the `/start` command!",
+            user.username,
+            user.id,
+        )
+        await update.message.reply_text(
+            text="You are unauthorized to use this bot! 😕 See help page."
+        )
 
 
 async def handle_help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
     """Send a message when the command /help is issued."""
     user: User | None = update.effective_user
 
-    logger.info("User `%s` triggered the /help command", user.username)
+    logger.info("User (usename='%s' id='%s') triggered the `/help` command", user.username, user.id)
 
-    await update.message.reply_text(text="This is a help page")
+    reply = (
+        "This is a Telegram bot that sends Yandex Cloud billing reports.\n",
+        "<b>GitHub</b>: https://github.com/leonidgrishenkov/yandex-cloud-billing-analysis-bot",
+        "<b>Owner:</b> @leonidgrishenkov",
+    )
+
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text="\n".join(reply), parse_mode=ParseMode.HTML
+    )
+    # await update.message.reply_text(text="This is a help page")  # TODO: change
 
 
 async def handle_unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
     """Send a message when unknown command is issued."""
     user: User | None = update.effective_user
 
-    logger.info("User `%s` specified unknown command", user.username)
+    logger.info("User (usename='%s' id='%s') specified unknown command", user.username, user.id)
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -52,34 +72,63 @@ async def handle_unknown_command(update: Update, context: ContextTypes.DEFAULT_T
 
 async def handle_daily_report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
     user: User | None = update.effective_user
-    logger.info("User `%s` triggered the `/daily_report` command", user.username)
 
-    keyboard = [
-        [InlineKeyboardButton("By Service", callback_data="daily_by_service")],
-        [InlineKeyboardButton("By Product", callback_data="daily_by_product")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    if user.id in AUTHORIZED_USERS:
+        logger.info(
+            "User (usename='%s' id='%s') triggered the `/daily_report` command",
+            user.username,
+            user.id,
+        )
+        keyboard = [
+            [InlineKeyboardButton("By Service", callback_data="daily_by_service")],
+            [InlineKeyboardButton("By Product", callback_data="daily_by_product")],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
 
-    logger.info("Waiting for `%s` user to click the button", user.username)
-    await update.message.reply_text(
-        "Please, specify which report you want to see:", reply_markup=reply_markup
-    )
+        logger.info("Waiting for `%s` user to click the button", user.username)
+        await update.message.reply_text(
+            "Please, specify which report you want to see:", reply_markup=reply_markup
+        )
+    else:
+        logger.warning(
+            "Unauthorized user (usename='%s' id='%s') triggered the `/daily_report` command!",
+            user.username,
+            user.id,
+        )
+        await update.message.reply_text(
+            text="You are unauthorized to use this bot! 😕 See help page."
+        )
 
 
 async def handle_weekly_report(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
     user: User | None = update.effective_user
-    logger.info("User `%s` triggered the `/weekly_report` command", user.username)
 
-    keyboard = [
-        [InlineKeyboardButton(text="By Service", callback_data="weekly_by_service")],
-        [InlineKeyboardButton("By Product", callback_data="weekly_by_product")],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    if user.id in AUTHORIZED_USERS:
+        logger.info(
+            "User (usename='%s' id='%s') triggered the `/weekly_report` command",
+            user.username,
+            user.id,
+        )
 
-    logger.info("Waiting for `%s` user to click the button", user.username)
-    await update.message.reply_text(
-        "Please, specify which report you want to see:", reply_markup=reply_markup
-    )
+        keyboard = [
+            [InlineKeyboardButton(text="By Service", callback_data="weekly_by_service")],
+            [InlineKeyboardButton("By Product", callback_data="weekly_by_product")],
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        logger.info("Waiting for `%s` user to click the button", user.username)
+        await update.message.reply_text(
+            "Please, specify which report you want to see:", reply_markup=reply_markup
+        )
+    else:
+        logger.warning(
+            "Unauthorized user (usename='%s' id='%s') triggered the `/weekly_report` command!",
+            user.username,
+            user.id,
+        )
+        await update.message.reply_text(
+            text="You are unauthorized to use this bot! 😕 See help page."
+        )
 
 
 async def handle_callback_query_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
@@ -98,10 +147,10 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         report = daily.create_top_consumption_by_service_report(
             s3, bucket=os.getenv("S3_BUCKET_NAME")
         )
-        reply = [
+        reply = (
             f"<b>{row.service_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
-        ]
+        )
         s3.close()
 
         logger.info("Report created, sending back to user")
@@ -119,10 +168,10 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         report = daily.create_top_consumption_by_product_report(
             s3, bucket=os.getenv("S3_BUCKET_NAME")
         )
-        reply = [
+        reply = (
             f"<b>{row.sku_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
-        ]
+        )
         s3.close()
 
         logger.info("Report created, sending back to user")
@@ -142,10 +191,10 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         report = weekly.create_top_consumption_by_service_report(
             s3, bucket=os.getenv("S3_BUCKET_NAME")
         )
-        reply = [
+        reply = (
             f"<b>{row.service_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
-        ]
+        )
         s3.close()
 
         logger.info("Report created, sending back to user")
@@ -165,10 +214,10 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
         report = weekly.create_top_consumption_by_product_report(
             s3, bucket=os.getenv("S3_BUCKET_NAME")
         )
-        reply = [
+        reply = (
             f"<b>{row.sku_name}:</b> {round(row.cost, 2)} RUB"
             for row in report.itertuples(index=False)
-        ]
+        )
         s3.close()
 
         logger.info("Report created, sending back to user")

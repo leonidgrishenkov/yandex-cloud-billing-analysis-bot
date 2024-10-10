@@ -25,6 +25,7 @@ jobs:
                   echo "YC_S3_ADMIN_SA_SECRET_KEY=${{ secrets.YC_S3_ADMIN_SA_SECRET_KEY }}" >> .env
                   echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
                   echo "S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}" >> .env
+                  echo "APP_LOG_LEVEL=${{ vars.APP_LOG_LEVEL }}" >> .env
 
             - name: Log docker in to the Yandex Cloud Registry
               run: echo "${{ secrets.YC_OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
