@@ -1,18 +1,25 @@
 ---
+# yamllint disable rule:line-length
 name: Build and Push Docker Image
 
 on:
     push:
-        branches:
-            - main
+        tags:
+            - "*"
+        # branches:
+        #     - main
 
 jobs:
     build-and-push:
         runs-on: ubuntu-22.04
 
         steps:
-            - name: Checkout repository
+            - name: Checkout Repository
               uses: actions/checkout@v4
+
+            - name: Extract Tag
+              id: extract_tag
+              run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
             - name: Create .env file
               run: |
@@ -21,11 +28,11 @@ jobs:
                   echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
                   echo "BUCKET=${{ secrets.BUCKET }}" >> .env
 
-            - name: Log in to the Registry
+            - name: Log docker in to the Yandex Cloud Registry
               run: echo "${{ secrets.YC_OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
 
             - name: Build Docker image
-              run: docker build -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ github.sha }} .
+              run: docker build --quiet -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }} .
 
             - name: Push Docker image to the Registry
-              run: docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ github.sha }}
+              run: docker push --quiet cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}
