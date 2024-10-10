@@ -7,6 +7,14 @@ data "yandex_compute_image" "container-optimized-image" {
   family = "container-optimized-image"
 }
 
+resource "random_password" "compute-password" {
+  length  = 15
+  upper   = true
+  lower   = true
+  numeric = true
+  special = false
+}
+
 
 resource "yandex_compute_instance" "compute" {
   name        = "prod-compute-1"
@@ -42,6 +50,7 @@ resource "yandex_compute_instance" "compute" {
       {
         ssh_key_path = file("${local.ssh_key_path}"),
         username     = local.username,
+        passwd       = random_password.compute-password.bcrypt_hash,
     })
   }
 }

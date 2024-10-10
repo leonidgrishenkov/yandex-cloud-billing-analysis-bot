@@ -17,4 +17,3 @@ variable "zone" {
   type        = string
   description = "Zone name"
 }
-
