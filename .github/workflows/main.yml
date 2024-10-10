@@ -8,7 +8,7 @@ on:
             - "*"
 
 env:
-    TAG: GITHUB_REF##*/
+    TAG: "${GITHUB_REF##*/}"
 
 jobs:
     build-and-push:
