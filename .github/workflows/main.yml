@@ -6,8 +6,9 @@ on:
     push:
         tags:
             - "*"
-        # branches:
-        #     - main
+
+env:
+    TAG: GITHUB_REF##*/
 
 jobs:
     build-and-push:
@@ -16,10 +17,6 @@ jobs:
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
-
-            - name: Extract Tag
-              id: extract_tag
-              run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
             - name: Create .env file
               run: |
