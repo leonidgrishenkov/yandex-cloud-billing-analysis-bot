@@ -7,9 +7,6 @@ on:
         tags:
             - "*"
 
-env:
-    TAG: echo "${GITHUB_REF##*/}"
-
 jobs:
     build-and-push:
         runs-on: ubuntu-22.04
@@ -17,6 +14,10 @@ jobs:
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
+
+            - name: Extract Tag
+              id: extract_tag
+              run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
             - name: Create .env file
               run: |
