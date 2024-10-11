@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: Build and Push Docker Image
+name: Deploy the bot
 
 on:
     push:
