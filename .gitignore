@@ -12,3 +12,5 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+*.log
