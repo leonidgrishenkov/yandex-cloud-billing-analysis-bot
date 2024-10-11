@@ -1,68 +1,34 @@
-https://yandex.cloud/ru/docs/billing/operations/get-folder-report
+# About
+
+[Getting expense details by folder | Yandex Cloud](https://yandex.cloud/ru/docs/billing/operations/get-folder-report).
+
+# Local development
+
+Build and run the bot inside docker container.
 
 ```sh
-python src/main.py
+export IMAGE=yandex-cloud-billing-analysis-bot:dev-1.0.0
 ```
 
 ```sh
-docker build -t billing-analysis:dev-2.0.0 -f Dockerfile .
+docker build -t $IMAGE -f Dockerfile .
 ```
-
 
 ```sh
 docker run --detach --rm \
-    --name billing-analysis \
-    -v ./pyproject.toml:/app/pyproject.toml \
-    -v ./.env:/app/.env \
-    -v ./src:/app/src \
-    billing-analysis:dev-1.0.0 tail -f /dev/null
+    --name yandex-cloud-billing-analysis-bot \
+    $IMAGE
 ```
 
 ```sh
-docker exec -it billing-analysis /bin/bash
+docker logs -f yandex-cloud-billing-analysis-bot
 ```
 
-```sh
-poetry env use $(which python3)
-```
+# Deploy virtual machine on Yandex Cloud
 
-```sh
-. $(poetry env info --path)/bin/activate
-```
+The bot will run in docker container on virtual machine based on container optimazied image.
 
-```sh
-poetry install
-```
-
-# yandex cloud
-
-https://yandex.cloud/en-ru/docs/iam/concepts/authorization/oauth-token
-
-https://yandex.cloud/en/docs/container-registry/operations/authentication
-
-https://habr.com/ru/articles/697206/
-
-YC_OAUTH_TOKEN
-
-```sh
-export YC_OAUTH_TOKEN=
-```
-
-```sh
-echo $YC_OAUTH_TOKEN | docker login --username oauth --password-stdin cr.yandex
-```
-
-```sh
-yc container registry list
-```
-
-# github actions
-
-add YC_OAUTH_TOKEN, YC_REGISTRY_ID
-
-repo > settings > secrets and variables > new repository secret
-
-# Deploy vm on yandex cloud
+I deployed VM using Terraform.
 
 ```sh
 cd ./deploy
@@ -70,4 +36,36 @@ cd ./deploy
 
 ```sh
 source env.sh
+```
+
+Initialize terraform:
+
+```sh
+terraform init
+```
+
+Validate configurations:
+
+```sh
+terraform validate
+```
+
+Deploy:
+
+```sh
+terraform apply
+```
+
+Terraform output countains usefull informations, such as virtual machine public IP address and user password.
+
+To show terraform output:
+
+```sh
+terraform output
+```
+
+Or in JSON format:
+
+```sh
+terraform output -json
 ```
