@@ -1,22 +1,9 @@
 import logging
-import os
 from datetime import date, timedelta
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
-import boto3
-import dotenv
-
-dotenv.load_dotenv()
-
-
-def get_s3_instance() -> ...:
-    return boto3.client(
-        service_name="s3",
-        endpoint_url="https://storage.yandexcloud.net",
-        aws_access_key_id=os.getenv("YC_S3_ADMIN_SA_ACCESS_KEY"),
-        aws_secret_access_key=os.getenv("YC_S3_ADMIN_SA_SECRET_KEY"),
-    )
+import config
 
 
 AUTHORIZED_USERS = (196255068,)
@@ -42,11 +29,11 @@ def _create_logger() -> logging.Logger:
     )
 
     try:
-        level: int = levels[os.getenv("APP_LOG_LEVEL", "info")]
+        level: int = levels[config.APP_LOG_LEVEL]
     except KeyError:
         level: int = logging.INFO
 
-    logger: logging.Logger = logging.getLogger(name="__this_bot__")
+    logger: logging.Logger = logging.getLogger(name="__bot__")
     logger.setLevel(level)
 
     handler = TimedRotatingFileHandler(

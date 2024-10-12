@@ -1,7 +1,7 @@
-import os
 import sys
 
-import dotenv
+import config
+from handlers import command, error, message
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -10,20 +10,13 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
-
-from handlers import command, error, message
 from utils import logger
 
 
-POLL_INTERVAL = 1  # Seconds
-
-
 def main() -> ...:
-    dotenv.load_dotenv()
-
     logger.info("Starting a bot")
     # Create the Application.
-    app = Application.builder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
+    app = Application.builder().token(config.TELEGRAM_BOT_TOKEN).build()
 
     # Commands handlers.
     app.add_handler(CommandHandler("start", command.handle_start_command))
@@ -41,7 +34,7 @@ def main() -> ...:
     # Callback query handlers.
     app.add_handler(CallbackQueryHandler(command.handle_callback_query_buttons))
 
-    logger.info("Running polling with %s seconds poll interval", POLL_INTERVAL)
+    logger.info("Start to polling")
     app.run_polling(
         # Time to wait between polling updates from Telegram in seconds.
         poll_interval=1,

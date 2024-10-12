@@ -1,6 +1,5 @@
 import os
 
-import dotenv
 from telegram import (
     ForceReply,
     InlineKeyboardButton,
@@ -14,7 +13,6 @@ from telegram.ext import ContextTypes
 from report import daily, weekly
 from utils import get_s3_instance, logger, AUTHORIZED_USERS
 
-dotenv.load_dotenv()
 
 
 async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
