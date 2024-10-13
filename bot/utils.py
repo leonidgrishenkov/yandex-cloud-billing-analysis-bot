@@ -1,32 +1,16 @@
 import logging
-import os
 from datetime import date, timedelta
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
-import boto3
-import dotenv
-
-dotenv.load_dotenv()
-
-
-def get_s3_instance() -> ...:
-    return boto3.client(
-        service_name="s3",
-        endpoint_url="https://storage.yandexcloud.net",
-        aws_access_key_id=os.getenv("YC_S3_ADMIN_SA_ACCESS_KEY"),
-        aws_secret_access_key=os.getenv("YC_S3_ADMIN_SA_SECRET_KEY"),
-    )
-
-
-AUTHORIZED_USERS = (196255068,)
+from bot import config
 
 
 def _create_logger() -> logging.Logger:
     today: date = date.today()
     current_week = today - timedelta(days=today.weekday())
 
-    log_dir: Path = Path(__file__).parents[1] / "logs" / current_week.strftime(r"%Y-%m-%d")
+    log_dir: Path = config.LOG_DIR / current_week.strftime(r"%Y-%m-%d")
     if not log_dir.exists():
         log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -42,19 +26,18 @@ def _create_logger() -> logging.Logger:
     )
 
     try:
-        level: int = levels[os.getenv("APP_LOG_LEVEL", "info")]
+        level: int = levels[config.APP_LOG_LEVEL]
     except KeyError:
         level: int = logging.INFO
 
-    logger: logging.Logger = logging.getLogger(name="__this_bot__")
+    logger: logging.Logger = logging.getLogger(name="__bot__")
     logger.setLevel(level)
 
     handler = TimedRotatingFileHandler(
         filename=log_dir / current_date_log_file,
-        # when="W0",  # Rotate logs every week on Monday
         when="midnight",
-        interval=1,  # Interval is set to 1 week
-        backupCount=30,  # Keep 4 backup copies of the log file
+        interval=1,
+        backupCount=30,
         encoding="utf-8",
     )
 

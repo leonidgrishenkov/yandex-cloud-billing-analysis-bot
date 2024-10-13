@@ -24,6 +24,21 @@ docker run --detach --rm \
 docker logs -f yandex-cloud-billing-analysis-bot
 ```
 
+Or without docker just install packages:
+
+```sh
+poetry env use (which python3)
+poetry install
+```
+
+And run the bot:
+
+```sh
+poetry run python -m bot
+```
+
+Make sure `poetry` is installed on your machine.
+
 # Deploy virtual machine on Yandex Cloud
 
 The bot will run in docker container on virtual machine based on container optimazied image.
