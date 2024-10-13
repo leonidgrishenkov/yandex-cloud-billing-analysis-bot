@@ -39,6 +39,37 @@ poetry run python -m bot
 
 Make sure `poetry` is installed on your machine.
 
+# Users authentication
+
+Telegram users that can communicate with this bot handled by sqlite3 database.
+
+Table DDL:
+
+```sql
+CREATE TABLE authusers (
+  telegram_id INTEGER PRIMARY KEY,
+  is_active INTEGER DEFAULT 0
+);
+```
+
+Insert authenticated users;
+
+```sql
+INSERT INTO authusers(telegram_id, is_active) VALUES
+    (196255068, 1),
+    (196255069, 1),
+    (196255070, 1);
+```
+
+To disable inserted user access to the bot set `is_active` to 0 with corresponding value of `telegram_id`:
+
+```sql
+UPDATE authusers
+SET is_active = 0
+WHERE 1=1
+    AND telegram_id = 196255068;
+```
+
 # Deploy virtual machine on Yandex Cloud
 
 The bot will run in docker container on virtual machine based on container optimazied image.

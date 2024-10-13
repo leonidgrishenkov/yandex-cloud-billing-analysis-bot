@@ -1,3 +1,5 @@
+from typing import cast
+
 from telegram import Update, User
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
@@ -8,7 +10,7 @@ from bot.utils import logger
 
 
 async def handle_callback_query_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
-    user: User = update.effective_user
+    user: User = cast(User, update.effective_user)
 
     query = update.callback_query
     await query.answer()
