@@ -11,19 +11,18 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install poetry
+# Install poetry.
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry $(which python3) -
 
 ENV PATH="/opt/poetry/bin:$PATH"
 
 COPY ./pyproject.toml /app/pyproject.toml
 COPY ./.env /app/.env
-COPY ./src /app/src
+COPY ./bot /app/bot
 
+# Create virtual environment and install all dependencies.
 RUN cd /app \
     && poetry env use $(which python3) \
     && poetry install
 
-RUN chmod +x /app/src/entrypoint.sh
-
-ENTRYPOINT ["/app/src/entrypoint.sh"]
+ENTRYPOINT ["poetry", "run", "python", "-m", "bot"]

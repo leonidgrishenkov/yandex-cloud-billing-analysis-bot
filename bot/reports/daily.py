@@ -1,15 +1,14 @@
 from datetime import date, datetime
 
-import config
 import pandas as pd
-import s3
-from utils import logger
 
-from reports import common
+from bot import config, s3
+from bot.reports import groupby
+from bot.utils import logger
 
 
 def create_top_consumption_report(
-    groupby: common.GroupBy,
+    groupby: groupby.GroupBy,
 ) -> pd.DataFrame:
     current_date: date = datetime.now().date()
     top = 10
