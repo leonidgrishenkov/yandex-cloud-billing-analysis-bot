@@ -8,9 +8,7 @@ from bot.utils import logger
 async def handle_error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=render_template(
-            name="error.tpl",
-        ),
+        text=render_template(name="error.tpl", values=dict(error=context.error)),
     )
 
     logger.error(f"Update {update} caused an error: {context.error}")

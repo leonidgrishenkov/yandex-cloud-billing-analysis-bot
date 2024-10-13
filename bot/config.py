@@ -6,7 +6,6 @@ import dotenv
 dotenv.load_dotenv()
 
 TELEGRAM_BOT_TOKEN: str = os.getenv("TELEGRAM_BOT_TOKEN")
-AUTHORIZED_USERS: tuple = (196255068,)
 
 S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME")
 
@@ -16,6 +15,8 @@ YC_S3_ADMIN_SA_SECRET_KEY: str = os.getenv("YC_S3_ADMIN_SA_SECRET_KEY")
 
 APP_LOG_LEVEL: str = os.getenv("APP_LOG_LEVEL", "info")
 LOG_DIR: Path = Path(__file__).parents[1] / "logs"
+
+DB_PATH: Path = Path(__file__).parents[0] / "sql/db.sqlite3"
 
 if not YC_S3_ADMIN_SA_SECRET_KEY or not YC_S3_ADMIN_SA_ACCESS_KEY:
     raise ValueError(
