@@ -4,7 +4,7 @@ from telegram import Update, User
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
-from bot.reports import daily, groupby, weekly
+from bot.reports import daily, groupby, monthly, weekly
 from bot.templater import render_template
 from bot.utils import logger
 
@@ -29,6 +29,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             values=dict(
                 report_type="daily",
                 rows=(row for row in report.itertuples(index=False)),
+                total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
 
@@ -53,6 +54,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             values=dict(
                 report_type="daily",
                 rows=(row for row in report.itertuples(index=False)),
+                total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
 
@@ -75,6 +77,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             values=dict(
                 report_type="weekly",
                 rows=(row for row in report.itertuples(index=False)),
+                total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
 
@@ -98,6 +101,56 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             values=dict(
                 report_type="weekly",
                 rows=(row for row in report.itertuples(index=False)),
+                total=sum(row.cost for row in report.itertuples(index=False)),
+            ),
+        )
+
+        logger.info("Report created, sending back to user")
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id, text=reply, parse_mode=ParseMode.HTML
+        )
+
+    elif query.data == "monthly_by_service":
+        await query.edit_message_text(text=render_template(name="creating.tpl"))
+        logger.info(
+            "User `%s` chose `monthly_by_service` button of `/monthly_report` command",
+            user.username,
+        )
+
+        report = monthly.create_top_consumption_report(
+            groupby.GroupBy.SERVICE,
+        )
+        reply = render_template(
+            name="service.tpl",
+            values=dict(
+                report_type="monthly",
+                rows=(row for row in report.itertuples(index=False)),
+                total=sum(row.cost for row in report.itertuples(index=False)),
+            ),
+        )
+
+        logger.info("Report created, sending back to user")
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id, text=reply, parse_mode=ParseMode.HTML
+        )
+
+    elif query.data == "monthly_by_product":
+        await query.edit_message_text(text=render_template(name="creating.tpl"))
+        logger.info(
+            "User `%s` chose `monthly_by_product` button of `/monthly_report` command",
+            user.username,
+        )
+
+        report = monthly.create_top_consumption_report(
+            groupby.GroupBy.PRODUCT,
+        )
+
+        reply = render_template(
+            name="product.tpl",
+            values=dict(
+                report_type="monthly",
+                rows=(row for row in report.itertuples(index=False)),
+                total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
 

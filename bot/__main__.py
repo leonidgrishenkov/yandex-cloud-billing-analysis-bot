@@ -16,6 +16,7 @@ from bot.handlers import (
     error,
     help,
     message,
+    monthly,
     start,
     unknown,
     weekly,
@@ -27,6 +28,7 @@ COMMAND_HANDLERS = dict(
     help=help.handle_help_command,
     daily_report=daily.handle_daily_report,
     weekly_report=weekly.handle_weekly_report,
+    monthly_report=monthly.handle_monthly_report,
 )
 
 
