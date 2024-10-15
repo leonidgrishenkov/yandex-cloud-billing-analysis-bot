@@ -28,7 +28,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             name="service.tpl",
             values=dict(
                 report_type="daily",
-                rows=(row for row in report.itertuples(index=False)),
+                rows=(row for row in report.iloc[:10, :].itertuples(index=False)),
                 total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
@@ -53,7 +53,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             name="product.tpl",
             values=dict(
                 report_type="daily",
-                rows=(row for row in report.itertuples(index=False)),
+                rows=(row for row in report.iloc[:10, :].itertuples(index=False)),
                 total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
@@ -76,7 +76,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             name="service.tpl",
             values=dict(
                 report_type="weekly",
-                rows=(row for row in report.itertuples(index=False)),
+                rows=(row for row in report.iloc[:15, :].itertuples(index=False)),
                 total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
@@ -100,7 +100,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             name="product.tpl",
             values=dict(
                 report_type="weekly",
-                rows=(row for row in report.itertuples(index=False)),
+                rows=(row for row in report.iloc[:15, :].itertuples(index=False)),
                 total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
@@ -124,7 +124,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             name="service.tpl",
             values=dict(
                 report_type="monthly",
-                rows=(row for row in report.itertuples(index=False)),
+                rows=(row for row in report.iloc[:15, :].itertuples(index=False)),
                 total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )
@@ -149,7 +149,7 @@ async def handle_callback_query_buttons(update: Update, context: ContextTypes.DE
             name="product.tpl",
             values=dict(
                 report_type="monthly",
-                rows=(row for row in report.itertuples(index=False)),
+                rows=(row for row in report.iloc[:15, :].itertuples(index=False)),
                 total=sum(row.cost for row in report.itertuples(index=False)),
             ),
         )

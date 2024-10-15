@@ -12,7 +12,6 @@ def create_top_consumption_report(
 ) -> pd.DataFrame:
     current_date: date = datetime.now().date()
     report_dates: list[date] = [current_date - timedelta(days=_) for _ in range(30)]
-    top = 20
 
     logger.info("Creating report for these dates: %s", report_dates)
 
@@ -31,11 +30,10 @@ def create_top_consumption_report(
 
     report: pd.DataFrame = pd.concat(reports)
 
-    logger.info("Aggregating report by `%s` with top `%s`", groupby.value, top)
+    logger.info("Aggregating report by `%s`", groupby.value)
 
     return (
         report.groupby([groupby.value], as_index=False)
         .agg({"cost": "sum"})
         .sort_values("cost", ascending=False)
-        .iloc[:top, :]
     )
