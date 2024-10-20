@@ -11,3 +11,4 @@ users:
 
 runcmd:
     - sudo usermod -aG docker ${username}
+    - sudo docker volume create bot-logs
