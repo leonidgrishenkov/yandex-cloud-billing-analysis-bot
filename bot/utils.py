@@ -1,20 +1,15 @@
 import logging
-from datetime import date, timedelta
+from datetime import date
 from logging.handlers import TimedRotatingFileHandler
-from pathlib import Path
 
 from bot import config
 
 
 def _create_logger() -> logging.Logger:
     today: date = date.today()
-    current_week = today - timedelta(days=today.weekday())
 
-    log_dir: Path = config.LOG_DIR / current_week.strftime(r"%Y-%m-%d")
-    if not log_dir.exists():
-        log_dir.mkdir(parents=True, exist_ok=True)
-
-    current_date_log_file: Path = log_dir / (today.strftime(r"%Y-%m-%d") + ".log")
+    if not config.LOG_DIR.exists():
+        config.LOG_DIR.mkdir()
 
     levels: dict = dict(
         info=logging.INFO,
@@ -34,7 +29,7 @@ def _create_logger() -> logging.Logger:
     logger.setLevel(level)
 
     handler = TimedRotatingFileHandler(
-        filename=log_dir / current_date_log_file,
+        filename=config.LOG_DIR / (today.strftime(r"%Y-%m-%d") + ".log"),
         when="midnight",
         interval=1,
         backupCount=30,
