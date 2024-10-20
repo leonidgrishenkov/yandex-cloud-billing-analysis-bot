@@ -31,10 +31,10 @@ jobs:
               run: echo "${{ secrets.YC_OAUTH_TOKEN }}" | docker login --username oauth --password-stdin cr.yandex
 
             - name: Build Docker image
-              run: docker build --quiet -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }} .
+              run: docker build -q -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }} .
 
             - name: Push Docker image to the Registry
-              run: docker push --quiet cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}
+              run: docker push -q cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}
 
             - name: Configure SSH
               run: |
@@ -50,4 +50,4 @@ jobs:
             - name: Run new Docker image
               run: |
                   ssh target-compute-intance 'if [ "$(docker ps -q -f name=${{ github.event.repository.name }})" ]; then docker stop ${{ github.event.repository.name }}; fi'
-                  ssh target-compute-intance 'docker run -d -q --rm --name=${{ github.event.repository.name }} cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}'
+                  ssh target-compute-intance 'docker run -d -q --rm --name=${{ github.event.repository.name }} -v bot-logs:/app/logs cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ github.event.repository.name }}:${{ env.TAG }}'
