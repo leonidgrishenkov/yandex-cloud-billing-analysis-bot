@@ -2,6 +2,7 @@
 
 [Getting expense details by folder | Yandex Cloud](https://yandex.cloud/ru/docs/billing/operations/get-folder-report).
 
+[Watch the Bot usage demo video](https://youtu.be/wenye9Q32xo)
 
 # Local development
 
