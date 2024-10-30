@@ -2,7 +2,6 @@
 
 [Getting expense details by folder | Yandex Cloud](https://yandex.cloud/ru/docs/billing/operations/get-folder-report).
 
-[!Demo](.github/.content/demo.mov)
 
 # Local development
 
