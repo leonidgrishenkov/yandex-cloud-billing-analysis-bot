@@ -2,6 +2,8 @@
 
 [Getting expense details by folder | Yandex Cloud](https://yandex.cloud/ru/docs/billing/operations/get-folder-report).
 
+[!Demo](.github/.content/demo.mov)
+
 # Local development
 
 Build and run the bot inside docker container.
@@ -42,6 +44,10 @@ Make sure `poetry` is installed on your machine.
 # Users authentication
 
 Telegram users that can communicate with this bot handled by sqlite3 database.
+
+```sql
+sqlite3 ./bot/sql/db.sqlite3
+```
 
 Table DDL:
 
