@@ -1,12 +1,10 @@
 import logging
-from datetime import date
 from logging.handlers import TimedRotatingFileHandler
 
 from bot import config
 
 
 def _create_logger() -> logging.Logger:
-    today: date = date.today()
 
     if not config.LOG_DIR.exists():
         config.LOG_DIR.mkdir()
@@ -29,7 +27,7 @@ def _create_logger() -> logging.Logger:
     logger.setLevel(level)
 
     handler = TimedRotatingFileHandler(
-        filename=config.LOG_DIR / (today.strftime(r"%Y-%m-%d") + ".log"),
+        filename=config.LOG_DIR / "app.log",
         when="midnight",
         interval=1,
         backupCount=30,
@@ -49,7 +47,7 @@ def _create_logger() -> logging.Logger:
     for extlogger in (
         logging.getLogger(_name) for _name in ("boto3", "botocore", "httpx", "telegram", "dotenv")
     ):
-        # Decrease `httpx` package log level bacause it's to verbose
+        # Decrease `httpx` package log level bacause it's too verbose
         # and also writes encrypted bot token.
         if extlogger.name == "httpx":
             extlogger.setLevel(logging.WARNING)
