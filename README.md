@@ -1,3 +1,12 @@
+<div align="center">
+  <a href="https://github.com/leonidgrishenkov/yandex-cloud-billing-analysis-bot/actions/workflows/main.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/leonidgrishenkov/yandex-cloud-billing-analysis-bot/main.yml?style=flat-square&logo=github&logoColor=c7c7c7&label=CI&labelColor=282828&color=347D39&event=push" alt="CI status" />
+  </a>
+    <a href="https://github.com/astral-sh/ruff">
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff">
+</a>
+</div>
+
 # About
 
 [Getting expense details by folder | Yandex Cloud](https://yandex.cloud/ru/docs/billing/operations/get-folder-report).
