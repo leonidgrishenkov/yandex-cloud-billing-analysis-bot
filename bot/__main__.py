@@ -21,7 +21,7 @@ from bot.handlers import (
     unknown,
     weekly,
 )
-from bot.utils import logger
+from bot.logger import logger
 
 COMMAND_HANDLERS = dict(
     start=start.handle_start_command,

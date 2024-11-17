@@ -2,7 +2,7 @@ import boto3
 import pandas as pd
 
 from bot import config
-from bot.utils import logger
+from bot.logger import logger
 
 
 def get_instance() -> ...:

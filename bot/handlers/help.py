@@ -5,7 +5,7 @@ from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
 from bot.templater import render_template
-from bot.utils import logger
+from bot.logger import logger
 
 
 async def handle_help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:

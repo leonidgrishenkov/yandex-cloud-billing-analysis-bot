@@ -10,7 +10,7 @@ from telegram.ext import ContextTypes
 
 from bot.handlers import validator
 from bot.templater import render_template
-from bot.utils import logger
+from bot.logger import logger
 
 
 @validator.validate_user
