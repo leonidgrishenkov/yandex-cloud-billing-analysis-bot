@@ -11,6 +11,7 @@ from telegram.ext import (
 
 from bot import config
 from bot.handlers import (
+    balance,
     callback,
     daily,
     error,
@@ -21,7 +22,7 @@ from bot.handlers import (
     unknown,
     weekly,
 )
-from bot.utils import logger
+from bot.logger import logger
 
 COMMAND_HANDLERS = dict(
     start=start.handle_start_command,
@@ -29,6 +30,7 @@ COMMAND_HANDLERS = dict(
     daily_report=daily.handle_daily_report,
     weekly_report=weekly.handle_weekly_report,
     monthly_report=monthly.handle_monthly_report,
+    balance=balance.handle_balance_command,
 )
 
 

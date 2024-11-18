@@ -12,7 +12,11 @@ boto3 = "1.35.34"
 python-dotenv = "1.0.0"
 python-telegram-bot = "21.6"
 jinja2 = "3.1.4"
-aiosqlite = "^0.20.0"
+aiosqlite = "0.20.0"
+requests = "2.32.3"
+
+[tool.poetry.group.dev.dependencies]
+rich = "13.9.4"
 
 [build-system]
 requires = ["poetry-core"]

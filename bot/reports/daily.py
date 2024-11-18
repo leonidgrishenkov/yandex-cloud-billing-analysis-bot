@@ -4,7 +4,7 @@ import pandas as pd
 
 from bot import config, s3
 from bot.reports import groupby
-from bot.utils import logger
+from bot.logger import logger
 
 
 def create_top_consumption_report(

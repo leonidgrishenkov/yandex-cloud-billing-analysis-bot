@@ -4,7 +4,7 @@ from telegram import Update, User
 from telegram.ext import ContextTypes
 
 from bot.templater import render_template
-from bot.utils import logger
+from bot.logger import logger
 
 
 async def handle_unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> ...:
