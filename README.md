@@ -95,8 +95,10 @@ I deployed VM using Terraform.
 cd ./deploy
 ```
 
+Allow `direnv` to load environment variables from `.envrc`:
+
 ```sh
-source env.sh
+direnv allow
 ```
 
 Initialize terraform:
