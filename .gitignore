@@ -13,4 +13,4 @@
 *.tfstate
 *.tfstate.*
 
-*.log
+**/logs/*
