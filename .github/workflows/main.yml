@@ -23,6 +23,8 @@ jobs:
               run: |
                   echo "YC_S3_ADMIN_SA_ACCESS_KEY=${{ secrets.YC_S3_ADMIN_SA_ACCESS_KEY }}" >> .env
                   echo "YC_S3_ADMIN_SA_SECRET_KEY=${{ secrets.YC_S3_ADMIN_SA_SECRET_KEY }}" >> .env
+                  echo "YC_OAUTH_TOKEN=${{ secrets.YC_OAUTH_TOKEN }}" >> .env
+                  echo "YC_BILLING_ACC_ID=${{ secrets.YC_BILLING_ACC_ID }}" >> .env
                   echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
                   echo "S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}" >> .env
                   echo "APP_LOG_LEVEL=${{ vars.APP_LOG_LEVEL }}" >> .env
