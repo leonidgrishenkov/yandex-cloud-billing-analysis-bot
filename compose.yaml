@@ -1,0 +1,15 @@
+version: "3.9"
+
+volumes:
+    bot-logs:
+        external: true
+
+services:
+    app:
+        image: ${IMAGE}
+        volumes:
+            - bot-logs:/app/logs
+        deploy:
+            replicas: 1
+            restart_policy:
+                condition: on-failure
