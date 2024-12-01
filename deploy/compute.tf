@@ -7,12 +7,20 @@ data "yandex_compute_image" "container-optimized-image" {
   family = "container-optimized-image"
 }
 
-resource "random_password" "compute-password" {
-  length  = 15
+resource "random_password" "yc-user-passwd" {
+  length  = 20
   upper   = true
   lower   = true
   numeric = true
-  special = false
+  special = true
+}
+
+resource "random_password" "github-ci-passwd" {
+  length  = 20
+  upper   = true
+  lower   = true
+  numeric = true
+  special = true
 }
 
 
@@ -48,9 +56,10 @@ resource "yandex_compute_instance" "compute" {
   metadata = {
     user-data = templatefile("./cloud-init.yaml",
       {
-        ssh_key_path = file("${local.ssh_key_path}"),
-        username     = local.username,
-        passwd       = random_password.compute-password.bcrypt_hash,
+        yc-user-passwd    = random_password.yc-user-passwd.bcrypt_hash,
+        yc-user-ssh-key   = file("~/.ssh/dev-hosts.pub"),
+        github-ci-passwd  = random_password.github-ci-passwd.bcrypt_hash,
+        github-ci-ssh-key = file("~/.ssh/github-ci.pub"),
     })
   }
 }

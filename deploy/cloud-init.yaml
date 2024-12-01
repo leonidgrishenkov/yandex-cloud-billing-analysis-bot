@@ -1,14 +1,23 @@
 #cloud-config
 users:
-    - name: ${username}
+    - name: yc-user
       groups: sudo
       sudo: ALL=(ALL) NOPASSWD:ALL
-      shell: /bin/bash
-      hashed_passwd: ${passwd}
+      hashed_passwd: ${yc-user-passwd}
       lock_passwd: false
+      shell: /bin/bash
       ssh-authorized-keys:
-          - ${ssh_key_path}
+          - ${yc-user-ssh-key}
+
+    - name: github-ci
+      groups: docker
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      hashed_passwd: ${github-ci-passwd}
+      lock_passwd: false
+      shell: /bin/bash
+      ssh-authorized-keys:
+          - ${github-ci-ssh-key}
 
 runcmd:
-    - sudo usermod -aG docker ${username}
+    - sudo docker swarm init
     - sudo docker volume create bot-logs
