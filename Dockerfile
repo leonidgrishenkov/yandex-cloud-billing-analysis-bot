@@ -17,12 +17,13 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry $(whic
 ENV PATH="/opt/poetry/bin:$PATH"
 
 COPY ./pyproject.toml /app/pyproject.toml
+COPY ./poetry.lock /app/poetry.lock
 COPY ./.env /app/.env
 COPY ./bot /app/bot
 
 # Create virtual environment and install all dependencies.
 RUN cd /app \
     && poetry env use $(which python3) \
-    && poetry install
+    && poetry install --without=dev
 
 ENTRYPOINT ["poetry", "run", "python", "-m", "bot"]

@@ -4,8 +4,6 @@
 .venv/*
 .cache/*
 
-*.lock
-
 # Local .terraform directories
 **/.terraform/*
 
