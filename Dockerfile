@@ -3,7 +3,6 @@
 FROM docker.io/python@sha256:c24c34b502635f1f7c4e99dc09a2cbd85d480b7dcfd077198c6b5af138906390
 
 USER root
-WORKDIR /app
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -11,19 +10,18 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install poetry.
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry $(which python3) -
+RUN useradd -mU appuser -s /bin/bash
+USER appuser
 
-ENV PATH="/opt/poetry/bin:$PATH"
+ENV HOME="/home/appuser"
 
-COPY ./pyproject.toml /app/pyproject.toml
-COPY ./poetry.lock /app/poetry.lock
-COPY ./.env /app/.env
-COPY ./bot /app/bot
+WORKDIR $HOME/app
 
-# Create virtual environment and install all dependencies.
-RUN cd /app \
-    && poetry env use $(which python3) \
-    && poetry install --without=dev
+COPY --chown=appuser:appuser ./pyproject.toml ./uv.lock ./.env $HOME/app/
+COPY --chown=appuser:appuser ./bot $HOME/app/bot
 
-ENTRYPOINT ["poetry", "run", "python", "-m", "bot"]
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+ENV PATH="$HOME/.local/bin:$PATH"
+
+ENTRYPOINT ["uv", "run", "--no-dev", "--module", "bot", "--python", "$(which python3)", "--no-progress"]
