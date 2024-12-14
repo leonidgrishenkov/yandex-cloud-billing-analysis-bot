@@ -31,24 +31,17 @@ docker run --detach --rm \
     $IMAGE
 ```
 
+Get container logs:
+
 ```sh
 docker logs -f yandex-cloud-billing-analysis-bot
 ```
 
-Or without docker just install packages:
+Enter into container by `root` user:
 
 ```sh
-poetry env use (which python3)
-poetry install
+docker exec -it -u root yandex-cloud-billing-analysis-bot /bin/bash
 ```
-
-And run the bot:
-
-```sh
-poetry run python -m bot
-```
-
-Make sure `poetry` is installed on your machine.
 
 # Users authentication
 
