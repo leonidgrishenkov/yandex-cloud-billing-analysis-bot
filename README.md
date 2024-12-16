@@ -128,3 +128,8 @@ Or in JSON format:
 ```sh
 terraform output -json
 ```
+
+# TODO
+
+- [ ] Add handler to get report for the particular date
+- [ ] Add background job that will send message when balance goes below certain threshold
