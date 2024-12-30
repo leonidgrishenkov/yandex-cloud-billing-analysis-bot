@@ -1,16 +1,17 @@
 from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
 from bot import config, s3
-from bot.reports import groupby
 from bot.logger import logger
+from bot.reports import groupby
 
 
 def create_top_consumption_report(
     groupby: groupby.GroupBy,
 ) -> pd.DataFrame:
-    current_date: date = datetime.now().date()
+    current_date: date = datetime.now().astimezone(ZoneInfo("Europe/Moscow")).date()
     logger.info("Creating report for current date: `%s`", current_date)
 
     report: pd.DataFrame = s3.read_file(

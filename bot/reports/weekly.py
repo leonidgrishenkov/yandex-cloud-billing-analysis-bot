@@ -1,16 +1,18 @@
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
 from bot import config, s3
-from bot.reports import groupby
 from bot.logger import logger
+from bot.reports import groupby
 
 
 def create_top_consumption_report(
     groupby: groupby.GroupBy,
 ) -> pd.DataFrame:
-    current_date: date = datetime.now().date()
+    current_date: date = datetime.now().astimezone(ZoneInfo("Europe/Moscow")).date()
+
     report_dates: list[date] = [current_date - timedelta(days=_) for _ in range(7)]
 
     logger.info("Creating report for these dates: %s", report_dates)
