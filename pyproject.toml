@@ -19,3 +19,10 @@ dev = [
     "rich==13.9.4",
 ]
 
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+# Ignore specific Pyright rules.
+reportRedeclaration = "none"
+
