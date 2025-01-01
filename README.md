@@ -97,7 +97,7 @@ AUTH_USERS=1111,2222,3333,4444
 
 For all required env variables see `.env.example`.
 
-# Deploy virtual machine on Yandex Cloud
+# Deploy virtual machine in Yandex Cloud
 
 The bot will run in docker container on virtual machine based on container optimazied image.
 
