@@ -33,6 +33,7 @@ jobs:
                   YC_BILLING_ACC_ID=${{ secrets.YC_BILLING_ACC_ID }}
                   TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
                   S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}
+                  AUTH_USERS=${{ secrets.AUTH_USERS }}
                   APP_LOG_LEVEL=${{ vars.APP_LOG_LEVEL }}
                   EOF
 
