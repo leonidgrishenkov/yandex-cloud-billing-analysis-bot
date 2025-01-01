@@ -1,28 +1,35 @@
+from __future__ import annotations
+
 from datetime import date, datetime
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
-import pandas as pd
-
-from bot import config, s3
 from bot.logger import logger
-from bot.reports import groupby
+from bot.reports.common import create_report
 
+if TYPE_CHECKING:
+    from pandas import DataFrame
+
+    from bot.reports.groupby import GroupBy
 
 def create_top_consumption_report(
-    groupby: groupby.GroupBy,
-) -> pd.DataFrame:
-    current_date: date = datetime.now().astimezone(ZoneInfo("Europe/Moscow")).date()
-    logger.info("Creating report for current date: `%s`", current_date)
+    groupby: GroupBy,
+) -> DataFrame:
+    current_datetime: datetime = datetime.now().astimezone(ZoneInfo("Europe/Moscow"))
+    report_date: date = current_datetime.date()
 
-    report: pd.DataFrame = s3.read_file(
-        key=f"{current_date.strftime(r'%Y%m%d')}.csv",
-        bucket=config.S3_BUCKET_NAME,
+    logger.info("Creating daily report for this date: '%s'", report_date)
+
+    report = create_report(
+        report_date=report_date,
+        dbtable = "daily_report",
+        current_datetime=current_datetime,
     )
 
-    logger.info("Aggregating report by `%s`", groupby.value)
+    logger.info("Aggregating report by '%s'", groupby.value)
 
     return (
         report.groupby([groupby.value], as_index=False)
         .agg({"cost": "sum"})
-        .sort_values("cost", ascending=False)
+        .sort_values(by="cost", ascending=False)
     )

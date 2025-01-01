@@ -12,9 +12,48 @@
 
 # About
 
+This is a Telegram bot that sends ad-hock reports about Yandex Cloud expense details and actual billing acount balance.
+
 [Getting expense details by folder | Yandex Cloud](https://yandex.cloud/ru/docs/billing/operations/get-folder-report).
 
-[Watch the Bot usage demo video](https://youtu.be/wenye9Q32xo)
+## Bot commands
+
+The main bot commands:
+
+| Command           | Description                                 |
+| ----------------- | ------------------------------------------- |
+| `/balance`        | Show current billing account balance        |
+| `/daily_report`   | Show today's date actual consumption report |
+| `/weekly_report`  | Show last 7 days consumption report         |
+| `/monthly_report` | Show last 30 days consumption report        |
+
+After each `/*_report` command you will be prompt to select how you want to aggregate data.
+
+The posible ways are:
+
+1. By Service
+2. By Product
+
+Which means what entity in Yandex Cloud to use in `GROUP BY` clause.
+
+
+Show current balance:
+
+![balance](.github/images/balance.png)
+
+Daily report prompt:
+
+![daily-report-prompt](.github/images/daily-report-prompt.png)
+
+Daily report aggregated by product output:
+
+![daily-report-by-product-result](.github/images/daily-report-by-product-result.png)
+
+Daily report aggregated by service output:
+
+![daily-report-by-service-result](.github/images/daily-report-by-service-result.png)
+
+The same output will be for each `/*_report` command.
 
 # Local development
 
@@ -46,40 +85,17 @@ Enter into container by `root` user:
 docker exec -it -u root yandex-cloud-billing-analysis-bot /bin/bash
 ```
 
-# Users authentication
+# Users authorization
 
-Telegram users that can communicate with this bot handled by sqlite3 database.
+Telegram users that can communicate with this bot should be set via `AUTH_USERS` env variable in `.env` file.
 
-```sql
-sqlite3 ./bot/sql/db.sqlite3
+For multiple users use this format:
+
+```sh
+AUTH_USERS=1111,2222,3333,4444
 ```
 
-Table DDL:
-
-```sql
-CREATE TABLE authusers (
-  telegram_id INTEGER PRIMARY KEY,
-  is_active INTEGER DEFAULT 0
-);
-```
-
-Insert authenticated users;
-
-```sql
-INSERT INTO authusers(telegram_id, is_active) VALUES
-    (196255068, 1),
-    (196255069, 1),
-    (196255070, 1);
-```
-
-To disable inserted user access to the bot set `is_active` to 0 with corresponding value of `telegram_id`:
-
-```sql
-UPDATE authusers
-SET is_active = 0
-WHERE 1=1
-    AND telegram_id = 196255068;
-```
+For all required env variables see `.env.example`.
 
 # Deploy virtual machine on Yandex Cloud
 
@@ -132,4 +148,5 @@ terraform output -json
 # TODO
 
 - [ ] Add handler to get report for the particular date
-- [ ] Add background job that will send message when balance goes below certain threshold
+- [ ] Add background job that will send message when balance goes below specified threshold
+- [x] Add report results caching

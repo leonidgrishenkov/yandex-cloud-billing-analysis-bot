@@ -3,18 +3,16 @@ from typing import cast
 from telegram import Update, User
 from telegram.ext import ContextTypes
 
-from bot import db
-from bot.templater import render_template
+from bot import config
 from bot.logger import logger
+from bot.templater import render_template
 
 
 def validate_user(handler):
     async def wrapped(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user: User = cast(User, update.effective_user)
 
-        authusers: list[int] = await db.get_auth_users()
-
-        if user.id not in authusers:
+        if user.id not in config.AUTH_USERS:
             logger.warning(
                 "Unauthorized user triggered the %s command! %s", update.message.text, user
             )

@@ -1,36 +1,30 @@
+from __future__ import annotations
+
 from datetime import date, datetime, timedelta
+from typing import TYPE_CHECKING
 from zoneinfo import ZoneInfo
 
-import pandas as pd
+if TYPE_CHECKING:
+    from pandas import DataFrame
 
-from bot import config, s3
+    from bot.reports.groupby import GroupBy
+
 from bot.logger import logger
-from bot.reports import groupby
+from bot.reports.common import create_report
 
 
 def create_top_consumption_report(
-    groupby: groupby.GroupBy,
-) -> pd.DataFrame:
-    current_date: date = datetime.now().astimezone(ZoneInfo("Europe/Moscow")).date()
+    groupby: GroupBy,
+) -> DataFrame:
+    current_datetime: datetime = datetime.now().astimezone(ZoneInfo("Europe/Moscow"))
+    report_dates: list[date] = [(current_datetime - timedelta(days=day)).date() for day in range(7)]
+    logger.info("Creating weekly report for these dates: %s", report_dates)
 
-    report_dates: list[date] = [current_date - timedelta(days=_) for _ in range(7)]
-
-    logger.info("Creating report for these dates: %s", report_dates)
-
-    reports: list[pd.DataFrame] = []
-    for report_date in report_dates:
-        try:
-            reports.append(
-                s3.read_file(
-                    key=f"{report_date.strftime(r'%Y%m%d')}.csv",
-                    bucket=config.S3_BUCKET_NAME,
-                )
-            )
-        except FileNotFoundError as err:
-            logger.warning("%s, skipping", err)
-            continue
-
-    report: pd.DataFrame = pd.concat(reports)
+    report = create_report(
+        report_date=report_dates,
+        dbtable="weekly_report",
+        current_datetime=current_datetime,
+    )
 
     logger.info("Aggregating report by `%s`", groupby.value)
 

@@ -19,7 +19,14 @@ YC_BILLING_ACC_ID = os.getenv("YC_BILLING_ACC_ID")
 APP_LOG_LEVEL: str = os.getenv("APP_LOG_LEVEL", "info")
 LOG_DIR: Path = Path(__file__).parents[1] / "logs"
 
-DB_PATH: Path = Path(__file__).parents[0] / "sql/db.sqlite3"
+SQLITE_DB_FILE: Path = Path(__file__).parents[0] / "db.sqlite3"
+
+REPORT_LIFETIME_THRESHOLD = 2 # In hours
+
+_AUTH_USERS = os.getenv("AUTH_USERS")
+if not _AUTH_USERS:
+    raise ValueError("`AUTH_USERS` is required")
+AUTH_USERS: list[int] = [int(uid) for uid in str(_AUTH_USERS).split(',')]
 
 if not YC_S3_ADMIN_SA_SECRET_KEY or not YC_S3_ADMIN_SA_ACCESS_KEY:
     raise ValueError(

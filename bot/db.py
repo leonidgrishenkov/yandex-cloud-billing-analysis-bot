@@ -1,16 +1,36 @@
-import aiosqlite
+from __future__ import annotations
 
-from bot import config
+from datetime import datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sqlite3 import Connection
+
+def is_dbtable_exists(conn: Connection, dbtable: str) -> bool:
+    cursor = conn.cursor()
+
+    is_dbtable_exists = bool(
+        cursor.execute(f"""
+        SELECT
+            EXISTS (
+                SELECT 1
+                FROM sqlite_master
+                WHERE 1=1
+                    AND name = '{dbtable}'
+            );
+    """).fetchone()[0]
+    )
+    cursor.close()
+
+    return is_dbtable_exists
 
 
-async def get_auth_users() -> list[int]:
-    sql = """
-        SELECT telegram_id
-        FROM authusers
-        WHERE 1=1
-        AND is_active = 1
-    """
+def get_report_created_at(conn: Connection, dbtable: str) -> datetime:
+    cursor = conn.cursor()
 
-    async with aiosqlite.connect(config.DB_PATH) as db:
-        async with db.execute(sql) as cursor:
-            return [row[0] async for row in cursor]
+    report_created_at: datetime = datetime.fromisoformat(
+        cursor.execute(f"SELECT DISTINCT _created_at FROM {dbtable}").fetchone()[0]
+    )
+    cursor.close()
+
+    return report_created_at

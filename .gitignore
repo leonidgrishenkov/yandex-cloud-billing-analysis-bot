@@ -1,4 +1,4 @@
-.env
+**/.env
 
 **/__pycache__/*
 .venv/*
@@ -12,3 +12,8 @@
 *.tfstate.*
 
 **/logs/*
+
+**/*.sqlite3
+
+
+**/.DS_Store
