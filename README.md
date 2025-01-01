@@ -41,23 +41,21 @@ Which means what entity in Yandex Cloud to use in `GROUP BY` clause.
 
 Show current balance:
 
-[balance](.github/images/balance.png)
+![balance](.github/images/balance.png)
 
 Daily report prompt:
 
-[daily-report-prompt](.github/images/daily-report-prompt.png)
+![daily-report-prompt](.github/images/daily-report-prompt.png)
 
 Daily report aggregated by product output:
 
-[daily-report-prompt](.github/images/daily-report-prompt.png)
+![daily-report-by-product-result](.github/images/daily-report-by-product-result.png)
 
 Daily report aggregated by service output:
 
-[daily-report-by-service-result](.github/images/daily-report-by-service-result.png)
+![daily-report-by-service-result](.github/images/daily-report-by-service-result.png)
 
 The same output will be for each `/*_report` command.
-
-[daily-report-by-product-result](.github/images/daily-report-by-product-result.png)
 
 # Local development
 
