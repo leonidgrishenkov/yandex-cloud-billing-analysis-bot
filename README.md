@@ -12,13 +12,52 @@
 
 # About
 
+This is a Telegram bot that sends ad-hock reports about Yandex Cloud expense details and actual billing acount balance.
+
 [Getting expense details by folder | Yandex Cloud](https://yandex.cloud/ru/docs/billing/operations/get-folder-report).
 
 [Watch the Bot usage demo video](https://youtu.be/wenye9Q32xo)
 
 ## Bot commands
 
+The main bot commands:
 
+| Command           | Description                                 |
+| ----------------- | ------------------------------------------- |
+| `/balance`        | Show current billing account balance        |
+| `/daily_report`   | Show today's date actual consumption report |
+| `/weekly_report`  | Show last 7 days consumption report         |
+| `/monthly_report` | Show last 30 days consumption report        |
+
+After each `/*_report` command you will be prompt to select how you want to aggregate data.
+
+The posible ways are:
+
+1. By Service
+2. By Product
+
+Which means what entity in Yandex Cloud to use in `GROUP BY` clause.
+
+
+Show current balance:
+
+[balance](.github/images/balance.png)
+
+Daily report prompt:
+
+[daily-report-prompt](.github/images/daily-report-prompt.png)
+
+Daily report aggregated by product output:
+
+[daily-report-prompt](.github/images/daily-report-prompt.png)
+
+Daily report aggregated by service output:
+
+[daily-report-by-service-result](.github/images/daily-report-by-service-result.png)
+
+The same output will be for each `/*_report` command.
+
+[daily-report-by-product-result](.github/images/daily-report-by-product-result.png)
 
 # Local development
 
