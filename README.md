@@ -16,6 +16,10 @@
 
 [Watch the Bot usage demo video](https://youtu.be/wenye9Q32xo)
 
+## Bot commands
+
+
+
 # Local development
 
 Build and run the bot inside docker container.
@@ -46,40 +50,17 @@ Enter into container by `root` user:
 docker exec -it -u root yandex-cloud-billing-analysis-bot /bin/bash
 ```
 
-# Users authentication
+# Users authorization
 
-Telegram users that can communicate with this bot handled by sqlite3 database.
+Telegram users that can communicate with this bot should be set via `AUTH_USERS` env variable in `.env` file.
 
-```sql
-sqlite3 ./bot/sql/db.sqlite3
+For multiple users use this format:
+
+```sh
+AUTH_USERS=1111,2222,3333,4444
 ```
 
-Table DDL:
-
-```sql
-CREATE TABLE authusers (
-  telegram_id INTEGER PRIMARY KEY,
-  is_active INTEGER DEFAULT 0
-);
-```
-
-Insert authenticated users;
-
-```sql
-INSERT INTO authusers(telegram_id, is_active) VALUES
-    (196255068, 1),
-    (196255069, 1),
-    (196255070, 1);
-```
-
-To disable inserted user access to the bot set `is_active` to 0 with corresponding value of `telegram_id`:
-
-```sql
-UPDATE authusers
-SET is_active = 0
-WHERE 1=1
-    AND telegram_id = 196255068;
-```
+For all required env variables see `.env.example`.
 
 # Deploy virtual machine on Yandex Cloud
 
@@ -132,4 +113,5 @@ terraform output -json
 # TODO
 
 - [ ] Add handler to get report for the particular date
-- [ ] Add background job that will send message when balance goes below certain threshold
+- [ ] Add background job that will send message when balance goes below specified threshold
+- [x] Add report results caching
