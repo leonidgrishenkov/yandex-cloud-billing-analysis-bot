@@ -17,7 +17,7 @@ def get_instance() -> ...:
         )
         get_instance._s3 = _s3
     else:
-        logger.debug("Using existing one s3 connection")
+        logger.debug("Using existing s3 connection")
     return get_instance._s3
 
 
@@ -36,4 +36,4 @@ def read_file(key: str, bucket: str) -> pd.DataFrame:
         return pd.read_csv(response["Body"])
 
     except _s3.exceptions.NoSuchKey:
-        raise FileNotFoundError("There is no file with such key: `%s`", key) from None
+        raise FileNotFoundError(f"There is no file with such key: '{key}'") from None

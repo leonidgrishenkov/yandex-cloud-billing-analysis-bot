@@ -1,7 +1,8 @@
-import requests
 import os
-
 from http import HTTPStatus
+
+import requests
+
 from bot import config
 from bot.logger import logger
 
