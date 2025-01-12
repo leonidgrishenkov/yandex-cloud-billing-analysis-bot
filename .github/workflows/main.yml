@@ -38,7 +38,7 @@ jobs:
 
             - name: Generate SA auth file
               run: |
-                  cat ${{ secrets.YC_BILLING_SA_AUTH_JSON }} > .yc-sa-auth.json
+                  cat ${{ secrets.YC_BILLING_SA_AUTH_JSON }} | base64 -d > .yc-sa-auth.json
 
             - name: Log in to the Yandex Cloud Container Registry
               uses: docker/login-action@v3
