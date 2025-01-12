@@ -25,7 +25,7 @@ def _get_fresh_report(report_date: date) -> DataFrame:
     logger.info("Trying to create fresh using s3 data")
 
     return s3.read_file(
-        key=f'{report_date.strftime(r"%Y%m%d")}.csv',
+        key=f'reports/{report_date.strftime(r"%Y%m%d")}.csv',
         bucket=S3_BUCKET_NAME,
     )
 
@@ -39,7 +39,7 @@ def _get_fresh_report(report_dates: list) -> DataFrame:
         try:
             reports.append(
                 s3.read_file(
-                    key=f'{report_date.strftime(r"%Y%m%d")}.csv',
+                    key=f'reports/{report_date.strftime(r"%Y%m%d")}.csv',
                     bucket=S3_BUCKET_NAME,
                 )
             )
@@ -64,6 +64,16 @@ def cache_report(
     logger.info("Cached report as '%s' db table", dbtable)
 
 
+def get_report_created_at(conn: Connection, dbtable: str) -> datetime:
+    cursor = conn.cursor()
+
+    report_created_at: datetime = datetime.fromisoformat(
+        cursor.execute(f"SELECT DISTINCT _created_at FROM {dbtable}").fetchone()[0]
+    )
+    cursor.close()
+
+    return report_created_at
+
 def create_report(report_date: list[date] | date, dbtable: str, current_datetime: datetime) -> DataFrame:
     conn = sqlite3.connect(SQLITE_DB_FILE)
 
@@ -71,7 +81,7 @@ def create_report(report_date: list[date] | date, dbtable: str, current_datetime
     if db.is_dbtable_exists(conn, dbtable):
         logger.info("'%s' table exists. Checking when it was created", dbtable)
 
-        report_created_at: datetime = db.get_report_created_at(conn, dbtable)
+        report_created_at: datetime = get_report_created_at(conn, dbtable)
         delta: float = (current_datetime - report_created_at).seconds
 
         if round(delta / (60 * 60), 0) <= REPORT_LIFETIME_THRESHOLD:

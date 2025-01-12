@@ -36,7 +36,6 @@ The posible ways are:
 
 Which means what entity in Yandex Cloud to use in `GROUP BY` clause.
 
-
 Show current balance:
 
 ![balance](.github/images/balance.png)
@@ -97,52 +96,26 @@ AUTH_USERS=1111,2222,3333,4444
 
 For all required env variables see `.env.example`.
 
-# Deploy virtual machine in Yandex Cloud
+# Deploy
 
-The bot will run in docker container on virtual machine based on container optimazied image.
+Deploy configurations managed by terraform. You can find it here: https://github.com/leonidgrishenkov/yandex-cloud-infrastructure/tree/main/prod/services/compute-1
 
-I deployed VM using Terraform.
+Create and use docker context or just ssh into host:
 
 ```sh
-cd ./deploy
+$ docker context create prod-compute-1 --docker "host=ssh://yc-user@leonidgrishenkov.com"
+Successfully created context "prod-compute-1"
+
+$ docker context use prod-compute-1
+Current context is now "prod-compute-1"
+
+ssh-add ~/.ssh/prod-hosts
 ```
 
-Allow `direnv` to load environment variables from `.envrc`:
+Create volume to store bot logs:
 
 ```sh
-direnv allow
-```
-
-Initialize terraform:
-
-```sh
-terraform init
-```
-
-Validate configurations:
-
-```sh
-terraform validate
-```
-
-Deploy:
-
-```sh
-terraform apply
-```
-
-Terraform output countains usefull informations, such as virtual machine public IP address and user password.
-
-To show terraform output:
-
-```sh
-terraform output
-```
-
-Or in JSON format:
-
-```sh
-terraform output -json
+docker volume create bot-logs
 ```
 
 # TODO

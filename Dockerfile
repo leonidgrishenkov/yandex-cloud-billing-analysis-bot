@@ -1,6 +1,6 @@
-# 3.12.5-slim
-# https://hub.docker.com/layers/library/python/3.12.5-slim/images/sha256-eac7a234d33269f362593c31d2ff1db7b116fbd794929f1f6015f5ea812ff254?context=explore
-FROM docker.io/python@sha256:c24c34b502635f1f7c4e99dc09a2cbd85d480b7dcfd077198c6b5af138906390
+# python:3.13.1-slim
+# https://hub.docker.com/layers/library/python/3.13.1-slim/images/sha256-61c576c48c7324203bd8eee949d544910c406a0b7df7460522e3c3999c7f3b0f
+FROM docker.io/python@sha256:1127090f9fff0b8e7c3a1367855ef8a3299472d2c9ed122948a576c39addeaf1
 
 USER root
 
@@ -17,7 +17,7 @@ ENV HOME="/home/appuser"
 
 WORKDIR $HOME/app
 
-COPY --chown=appuser:appuser ./pyproject.toml ./uv.lock ./.env $HOME/app/
+COPY --chown=appuser:appuser ./pyproject.toml ./uv.lock ./.env ./.yc-sa-auth.json $HOME/app/
 COPY --chown=appuser:appuser ./bot $HOME/app/bot
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
