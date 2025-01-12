@@ -7,7 +7,7 @@ volumes:
 
 services:
     app:
-        image: ${IMAGE}
+        image: ${IMAGE}:${TAG}
         volumes:
             - bot-logs:/app/logs
         deploy:

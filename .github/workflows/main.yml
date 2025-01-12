@@ -3,76 +3,78 @@
 name: Deploy the bot
 
 on:
-    push:
-        tags:
-            - "*"
+  push:
+    tags:
+      - "*"
 
 jobs:
-    build:
-        runs-on: ubuntu-22.04
-        outputs:
-            image: ${{ steps.metadata.outputs.image }}
-            tag: ${{ steps.metadata.outputs.tag }}
+  build:
+    runs-on: ubuntu-22.04
+    outputs:
+      image: ${{ steps.metadata.outputs.image }}
+      tag: ${{ steps.metadata.outputs.tag }}
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-            - name: Extract Metadata
-              id: metadata
-              run: |
-                  echo "image=cr.yandex/${{ vars.YC_REGISTRY_ID }}/${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
-                  echo "tag=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+      - name: Extract Metadata
+        id: metadata
+        run: |
+          echo "image=cr.yandex/${{ vars.YC_REGISTRY_ID }}/${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
 
-            - name: Generate .env file
-              run: |
-                  cat << EOF > .env
-                  YC_S3_ACCESS_KEY=${{ secrets.YC_S3_ACCESS_KEY }}
-                  YC_S3_SECRET_KEY=${{ secrets.YC_S3_SECRET_KEY }}
-                  YC_BILLING_ACC_ID=${{ secrets.YC_BILLING_ACC_ID }}
-                  TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-                  S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}
-                  AUTH_USERS=${{ secrets.AUTH_USERS }}
-                  APP_LOG_LEVEL=${{ vars.APP_LOG_LEVEL }}
-                  EOF
+      - name: Generate .env file
+        run: |
+          cat << EOF > .env
+          YC_S3_ACCESS_KEY=${{ secrets.YC_S3_ACCESS_KEY }}
+          YC_S3_SECRET_KEY=${{ secrets.YC_S3_SECRET_KEY }}
+          YC_BILLING_ACC_ID=${{ secrets.YC_BILLING_ACC_ID }}
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          S3_BUCKET_NAME=${{ vars.S3_BUCKET_NAME }}
+          AUTH_USERS=${{ secrets.AUTH_USERS }}
+          APP_LOG_LEVEL=${{ vars.APP_LOG_LEVEL }}
+          EOF
 
-            - name: Generate SA auth file
-              run: |
-                  echo "${{ secrets.YC_BILLING_SA_AUTH_JSON }}" | base64 -d > .yc-sa-auth.json
+      - name: Generate SA auth file
+        run: |
+          echo "${{ secrets.YC_BILLING_SA_AUTH_JSON }}" | base64 -d > .yc-sa-auth.json
 
-            - name: Log in to the Yandex Cloud Container Registry
-              uses: docker/login-action@v3
-              with:
-                  registry: cr.yandex
-                  username: json_key
-                  password: ${{ secrets.YC_CR_SA_AUTH_JSON }}
+      - name: Log in to the Yandex Cloud Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: cr.yandex
+          username: json_key
+          password: ${{ secrets.YC_CR_SA_AUTH_JSON }}
 
-            - name: Build and push Docker image
-              uses: docker/build-push-action@v6
-              with:
-                  file: ./Dockerfile
-                  context: .
-                  push: true
-                  tags: |
-                      ${{ steps.metadata.outputs.image }}:${{ steps.metadata.outputs.tag }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          file: ./Dockerfile
+          context: .
+          push: true
+          tags: |
+            ${{ steps.metadata.outputs.image }}:${{ steps.metadata.outputs.tag }}
 
-    deploy:
-        needs: [build]
-        runs-on: ubuntu-22.04
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-22.04
 
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-            - name: Deploy Docker Stack
-              uses: leonidgrishenkov/docker-stack-deploy@v1.2.4
-              with:
-                  registry: cr.yandex
-                  username: json_key
-                  password: ${{ secrets.YC_CR_SA_AUTH_JSON }}
-                  remote_host: ${{ vars.YC_COMPUTE_HOST }}
-                  remote_user: ${{ vars.YC_COMPUTE_USER }}
-                  remote_private_key: ${{ secrets.YC_SSH_KEY }}
-                  stack_file: ./compose.yaml
-                  stack_name: bot
-                  env_file: IMAGE=${{ needs.build.outputs.image }}:${{ needs.build.outputs.tag }}
+      - name: Deploy Docker Stack
+        uses: leonidgrishenkov/docker-stack-deploy@v1.2.4
+        with:
+          registry: cr.yandex
+          username: json_key
+          password: ${{ secrets.YC_CR_SA_AUTH_JSON }}
+          remote_host: ${{ vars.YC_COMPUTE_HOST }}
+          remote_user: ${{ vars.YC_COMPUTE_USER }}
+          remote_private_key: ${{ secrets.YC_SSH_KEY }}
+          stack_file: ./compose.yaml
+          stack_name: bot
+          env_file: |
+            IMAGE=${{ needs.build.outputs.image }}
+            TAG=${{ needs.build.outputs.tag }}
