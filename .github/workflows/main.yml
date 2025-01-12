@@ -24,7 +24,7 @@ jobs:
                   echo "image=cr.yandex/${{ vars.YC_REGISTRY_ID }}/${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
                   echo "tag=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
 
-            - name: Generate required files
+            - name: Generate .env file
               run: |
                   cat << EOF > .env
                   YC_S3_ACCESS_KEY=${{ secrets.YC_S3_ACCESS_KEY }}
@@ -35,6 +35,9 @@ jobs:
                   AUTH_USERS=${{ secrets.AUTH_USERS }}
                   APP_LOG_LEVEL=${{ vars.APP_LOG_LEVEL }}
                   EOF
+
+            - name: Generate SA auth file
+              run: |
                   cat ${{ secrets.YC_BILLING_SA_AUTH_JSON }} > .yc-sa-auth.json
 
             - name: Log in to the Yandex Cloud Container Registry
