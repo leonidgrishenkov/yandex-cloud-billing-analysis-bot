@@ -118,6 +118,12 @@ Create volume to store bot logs:
 docker volume create bot-logs
 ```
 
+Add service account auth key into github secrets:
+
+```sh
+cat .yc-sa-auth.json | jq -c | base64 | pbcopy
+```
+
 # TODO
 
 - [ ] Add handler to get report for the particular date
