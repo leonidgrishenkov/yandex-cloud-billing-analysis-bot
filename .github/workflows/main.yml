@@ -8,7 +8,7 @@ on:
             - "*"
 
 jobs:
-    build-and-push:
+    build:
         runs-on: ubuntu-22.04
         outputs:
             image: ${{ steps.metadata.outputs.image }}
@@ -38,7 +38,7 @@ jobs:
 
             - name: Generate SA auth file
               run: |
-                  echo ${{ secrets.YC_BILLING_SA_AUTH_JSON }} > .yc-sa-auth.json
+                  echo "${{ secrets.YC_BILLING_SA_AUTH_JSON }}" > .yc-sa-auth.json
 
             - name: Log in to the Yandex Cloud Container Registry
               uses: docker/login-action@v3
@@ -57,7 +57,7 @@ jobs:
                       ${{ steps.metadata.outputs.image }}:${{ steps.metadata.outputs.tag }}
 
     deploy:
-        needs: [build-and-push]
+        needs: [build]
         runs-on: ubuntu-22.04
 
         steps:
@@ -75,4 +75,4 @@ jobs:
                   remote_private_key: ${{ secrets.YC_SSH_KEY }}
                   stack_file: ./compose.yaml
                   stack_name: bot
-                  env_file: IMAGE=${{ needs.build-and-push.outputs.image }}:${{ needs.build-and-push.outputs.tag }}
+                  env_file: IMAGE=${{ needs.build.outputs.image }}:${{ needs.build.outputs.tag }}
