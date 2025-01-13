@@ -103,7 +103,7 @@ Deploy configurations managed by terraform. You can find it here: https://github
 Create and use docker context or just ssh into host:
 
 ```sh
-$ docker context create prod-compute-1 --docker "host=ssh://yc-user@leonidgrishenkov.com"
+$ docker context create prod-compute-1 --docker "host=ssh://yc-user@leonidgrishenkov.com:51222"
 Successfully created context "prod-compute-1"
 
 $ docker context use prod-compute-1
@@ -116,6 +116,14 @@ Create volume to store bot logs:
 
 ```sh
 docker volume create bot-logs
+```
+
+```sh
+docker swarm init
+```
+
+```sh
+cat .yc-sa-auth.json | docker login --username json_key --password-stdin cr.yandex
 ```
 
 Add service account auth key into github secrets:
