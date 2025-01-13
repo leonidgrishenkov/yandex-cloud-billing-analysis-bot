@@ -71,6 +71,7 @@ jobs:
           username: json_key
           password: ${{ secrets.YC_CR_SA_AUTH_JSON }}
           remote_host: ${{ vars.YC_COMPUTE_HOST }}
+          remote_port: 51222
           remote_user: ${{ vars.YC_COMPUTE_USER }}
           remote_private_key: ${{ secrets.YC_SSH_KEY }}
           stack_file: ./compose.yaml
